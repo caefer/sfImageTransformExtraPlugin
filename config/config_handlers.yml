@@ -1,0 +1,4 @@
+config/thumbnailing.yml:
+  class: sfDefineEnvironmentConfigHandler
+  param:
+    prefix: thumbnailing_

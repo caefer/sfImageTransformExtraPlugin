@@ -1,0 +1,11 @@
+# You can find more information about this file on the symfony website:
+# http://www.symfony-project.org/reference/1_4/en/11-App
+
+# default values
+all:
+  sfImageTransformPlugin:
+    mime_type:
+      auto_detect:              true
+      library: gd_mime_type #  gd_mime_type (GD), Fileinfo (PECL), MIME_Type (PEAR)
+    font_dir: %SF_ROOT_DIR%/../../../data/example-resources/fonts
+

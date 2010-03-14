@@ -1,0 +1,11 @@
+# You can find more information about this file on the symfony website:
+# http://www.symfony-project.org/reference/1_4/en/05-Factories
+
+all:
+  view_cache:
+    class: sfFileCache
+    param:
+      automatic_cleaning_factor: 0
+      cache_dir:                 %SF_UPLOAD_DIR%/testing
+      lifetime:                  86400
+      prefix:                    %SF_APP_DIR%/template

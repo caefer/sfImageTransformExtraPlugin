@@ -1,0 +1,1173 @@
+= gujThumbnailsPlugin =
+
+This plugin is the new implementation of all thumbnailing functionality for the WLCP. It utilises sfImageTransformPlugin to handle the transformations.
+
+[[BR]]
+
+== Requirements ==
+
+ * [http://www.symfony-project.org/plugins/sfImageTransformPlugin sfImageTransformPlugin] from Version 1.2.0
+ * [https://cmcdev.guj.de/svn/wlcp/plugins/tags/<tag_name>/gujThumbnailsPlugin gujThumbnailsPlugin] available since WLCP Version 1.1.5
+
+For most transformations you need GD support compiled in your PHP binary.
+
+For some you need !ImageMagick API support compiled in your PHP binary.
+
+[[BR]]
+
+== Installation ==
+
+To install {{{sfImageTransformPlugin}}} please follow the installation section of the [http://www.symfony-project.org/plugins/sfImageTransformPlugin/1_2_0?tab=plugin_readme Readme].
+
+To install {{{gujThumbnailsPlugin}}} set your SVN externals to [https://cmcdev.guj.de/svn/wlcp/plugins/tags/<tag_name>/gujThumbnailsPlugin].
+
+{{{
+#!sh
+$ cd <root_of_your_project>
+$ svn propedit svn:externals plugins
+// add the following line:
+// gujThumbnailsPlugin https://cmcdev.guj.de/svn/wlcp/plugins/tags/<tag_name>/gujThumbnailsPlugin
+$ svn ci -m "added gujThumbnailsPlugin to this project" --non-recursive plugins
+$ svn up plugins
+}}}
+
+> Please replace <tag_name> with the latest WLCP version tag. {{{gujThumbnailsPlugin}}} is available since WLCP_1.1.5.
+
+You have to enable them both in your projects !ProjectConfiguration class:
+
+{{{
+#!php
+// in config/app/ProjectConfiguration.class.php
+[...]
+  public function setup()
+  {
+    $this->enablePlugins(array([...], 'sfImageTransformPlugin', 'gujThumbnailsPlugin', [...]));
+  }
+[...]
+}}}
+
+After you enabled the plugins you have also to enable the {{{gujThumb}}} module and the {{{Thumbnail}}} helper in your {{{settings.yml}}}:
+
+{{{
+#!yml
+all:
+  .settings
+    ..
+    enabled_modules:        [default, [...], gujThumbnail]
+    ..
+    standard_helpers:       [[...], Thumbnail]
+    ..
+}}}
+
+Now it is time to run the setup task.
+
+{{{
+#!sh
+$ ./symfony wlcp:setup-thumbnailing <APPLICATION>
+}}}
+
+The task will ask you for your preferred web directory under which you want your thumbnails to appear.
+It defaults to {{{/thumbnails}}} or {{{/thumbs}}} if /thumbnails already exists (enter custom value without the leading slash).
+
+> If you just hit return and stick to the default thumbnailing will work out of the box.[[BR]]
+> Otherwise write down what you entered and edit your {{{app.yml}}} to set '''{{{thumbnails_web_dir}}}''' to the same value.[[BR]]
+> See [#Pathsanddirectories Paths and directories] for details.
+
+This task will also trigger the [#Howtotranslateyouroldthumbnailformats translation task]. Please follow its directions.
+
+One more clear cache for good measure and you're ready to go.
+
+{{{
+#!sh
+$ ./symfony cc
+}}}
+
+[[BR]]
+
+== Usage ==
+
+gujThumbnailsPlugin provides a helper that you can easily use to transform your images into thumbnails.
+
+You can load the helper in your {{{settings.yml}}} (see [http://www.symfony-project.org/reference/1_2/en/04-Settings#chapter_04_sub_standard_helpers the reference]):
+
+{{{
+#!yml
+all:
+  .settings:
+    standard_helpers: [Partial, Cache, Form, Thumbnail]
+}}}
+
+This will make the Thumbnail helper available throughout your whole project.
+
+Or you can add it to your template directly:
+
+{{{
+#!php
+<?php use_helper('Thumbnail'); ?>
+}}}
+
+To add a thumbnail to your template use this helper like this:
+
+{{{
+#!php
+<?php echo guj_thumbnail($format, $id, $name, $options = array()); ?>
+}}}
+
+This helper is very similar to symfonys {{{image_tag()}}} helper. In fact it uses it under the hood so you can pass all the options to {{{guj_thumbnail()}}} that you would pass to {{{image_tag()}}}.
+
+But instead of a $source as first parameter {{{guj_thumbnail()}}} expects you to provide three parameters before the options array.
+
+ * '''{{{$format}}}''' references the thumbnail setting as configured in your app.yml
+ * '''{{{$id}}}''' references the ID of your original imageAsset that you want to thumbnail
+ * '''{{{$name}}}''' will be used to form the URL of your thumbnail for SEO purposes. Usually you pass the imageAssets headline attribute
+ * '''{{{$options}}}''' is an array of options as you can pass it to {{{image_tag()}}}
+
+Example:
+{{{
+#!php
+<?php echo guj_thumbnail('gallery_thumb', $imageAsset->getId(), $imageAsset->headline, $options = array('align' => 'left')); ?>
+}}}
+
+Also available is a convenience method on the {{{imageAsset}}}: {{{imageAsset::getThumbnailTag($format, $options = array())}}}.
+It omits the {{{$id}}} and {{{$title}}} parameters and takes the values from {{imageAsset::getId()}}} and {{{imageAsset::headline}}}.
+
+The above example again but more convenient:
+{{{
+#!php
+<?php echo $imageAsset->getThumbnailTag('gallery_thumb', $options = array('align' => 'left')); ?>
+}}}
+
+[[BR]]
+
+== Configuration ==
+
+{{{gujThumbnailsPlugin}}} and its incorporated {{{sfImageTransformPlugin}}} come with a lot configuration possibilities.
+
+For {{{sfImageTransformPlugin}}} please refer to the configuration section of the [http://www.symfony-project.org/plugins/sfImageTransformPlugin/1_2_0?tab=plugin_readme Readme].
+
+{{{gujThumbnailsPlugin}}} comes with an app.yml included in the plugin. In most cases you will not have to change anything except for your custom thumbnail formats. However the following shows you how to tweak the settings to your requirements.
+
+[[BR]]
+
+=== Thumbnail formats ===
+
+The configuration of your thumbnail formats is a simple list of format identifiers (keys) with associated mime type, quality and a list of transformations.
+
+These transformations are yml equivalents to translation classes that come with {{{sfImageTransformPlugin}}} (see [http://svn.symfony-project.com/plugins/sfImageTransformPlugin/trunk/lib/transforms/Generic/ Generic], [http://svn.symfony-project.com/plugins/sfImageTransformPlugin/trunk/lib/transforms/GD/ GD] and [http://svn.symfony-project.com/plugins/sfImageTransformPlugin/trunk/lib/transforms/ImageMagick/ ImageMagick]).
+They are very powerful and enable you not only to do resizing but also watermarking, writing text on images or any kind of image manipulation.
+
+Let's examine a brief example of how to configure a format for a gallery overview page.
+You want all thumbnails to be squares of good but not very good quality in jpeg format.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      gallery_thumb:
+        quality:         75
+        mime_type:       image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 150, height: 150, method: deflate, background: '#FFFFFF' }}
+}}}
+
+ * '''{{{quality}}}''' sets the quality of the resulting thumbnail image on a scale from 1-100 percent.
+ * '''{{{mime_type}}}''' sets the mime type of the resulting image
+ * '''{{{transformations}}}''' is a list of transformations (see the "Included tranforms" section [http://www.symfony-project.org/plugins/sfImageTransformPlugin sfImageTransformPlugin Readme])
+
+All transformations use the same structure:
+
+  * '''{{{adapter}}}''' in most cases is the default GD but could be !ImageMagick. It refers to the adapter used by the configured transformations.
+  * '''{{{transformation}}}''' specifies the transformation operation to use..
+  * '''{{{param}}}''' holds all parameters that are required by the execute method of the specified transformation.
+
+This structure enables you to configure multiple transformations as well as configuring the same transformation multiple times.
+
+In the above example we have one transformation configured that resizes the original image on a 150x150px canvas not preserving the aspect ratio.
+
+You can configure as many transformations as you like. Multiple transformations will be sequentially executed.
+
+You now have a new format {{{gallery_thumb}}} that you can use in your templates:
+
+{{{
+#!php
+<?php echo guj_thumbnail('gallery_thumb', $imageAsset->getId(), $imageAsset->headline, $options = array('title' => $imageAsset->headline)); ?>
+}}}
+
+> How to convert your old thumbnail settings to the new format is described [#Howtotranslateyouroldthumbnailformats here].
+
+[[BR]]
+
+=== Paths and directories ===
+
+There is a number of paths and directories you can configure.
+
+[[BR]]
+
+{{{
+#!yml
+## /apps/yourapp/config/app.yml
+all:
+  gujThumbnailsPlugin:
+    thumbnails_web_dir:         /gujThumbnailsPlugin
+    id_path_depth:              3
+}}}
+
+  * '''{{{thumbnails_web_dir}}}''' defines the URL path for your thumbnails relative to your document root.
+  * '''{{{id_path_depth}}}''' defines the depth of the generated numeric part of the thumbnail URLs. A value of 2 would result in something like {{{/39/01/}}} while a value of 3 would result in {{{/39/01/00/}}} for the same image object id (in this case 139). (see [#IOUsage Concept - I/O Usage])
+
+As fonts are not directly used by {{{gujThumbnailsPlugin}}} but are in fact loaded within {{{sfImageTransformPlugin}}} the path to your fonts need to be configured in the {{{sfImageTransformPlugin}}} section of your app.yml.
+
+{{{
+#!yml
+## /apps/yourapp/config/app.yml
+all:
+  sfImageTransformPlugin:
+    ..
+    font_dir: %SF_PLUGINS_DIR%/gujThumbnailsPlugin/data/example-resources/fonts
+    ..
+}}}
+
+> Make sure that your fonts end with a lowercase extension {{{.ttf}}} as {{{sfImageTransformPlugin}}} currently does not recognise uppercase extensions.
+
+[[BR]]
+
+=== Caching ===
+
+gujThumbnailsPlugin implements the symfony caching API and lets you decide on a caching strategy.
+
+You can configure the caching behaviour in your {{{app.yml}}} just as you would configure a caching class for your {{{view_cache}}} in your [http://www.symfony-project.org/reference/1_2/en/05-Factories#chapter_05_view_cache factories.yml].
+
+If you don't configure a caching class gujThumbnailsPlugin defaults to {{{sfNoCache}}}.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    cache:
+      class:                    gujThumbnailFileCache
+      param:
+        cache_dir:              %SF_WEB_DIR%/uploads/gujThumbnailsPlugin
+}}} 
+
+The above example is the advised caching behaviour. It stores the generated thumbnails in {{{/web/uploads/gujThumbnailsPlugin}}}.
+
+Already cached thumbnails will not be generated again but instead loaded from cache. You can use all symfony caching classes extending {{{sfCache}}} including APC, memcache or your own implementation.
+
+However even if you use caching serving thumbnails from cache via PHP has a very poor performance (way better than without caching at all but still poor). This is why we complement a file cache strategy with the use of Apache rewrite rules.
+
+[[BR]]
+
+=== Advanced: Object retrieval ===
+
+The {{{gujThumbnailsPlugin}}} is ORM independant.
+The {{{guj_thumbnail()}}} helper requires you to pass only scalar parameters but no object.
+
+When generating the thumbnail however the $id as passed via the URL needs to be instantiated and the original images source read from it. As this is heavily onj the ORM you use there is a way to configure retrieval:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    get_image_factory_class:    [ baseAsset, getPeer ]
+    get_image_object_method:    factory
+    get_image_path_method:      getOriginalFilePath
+}}}
+
+ * '''{{{get_image_factory_class}}}''' defines the image objects factory class. You have specify the class name here and {{{gujThumbnailsPlugin}}} will assume that {{{get_image_object_method}}} can be statically called. You can also pass a valid [http://php.net/manual/en/language.pseudo-types.php#language.types.callback callback] which will get instantiated and {{{get_image_object_method}}} will be called on the resulting object.
+ * '''{{{get_image_object_method}}}''' defines the method (synamic or static. see above) to retrieve the image object.
+ * '''{{{get_image_path_method}}}''' defined the image objects method to retrieve the absolute path to the image binary file.
+
+The above example would be equivalent to this:
+{{{
+#!php
+$peer       = baseAsset::getPeer();
+$object     = $peer->factory($id);
+$image_file = $object->getOriginalFilePath();
+}}}
+
+While a static example would be:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    get_image_factory_class:    imageAssetPeer
+    get_image_object_method:    retrieveByPk
+    get_image_path_method:      get_image_path_absolute
+}}}
+
+Equivalent to:
+
+{{{
+#!php
+$object     = imageAssetPeer::retrieveByPk($id);
+$image_file = $object->get_image_path_absolute();
+}}}
+
+[[BR]]
+
+> Object retrieval is a database operation (unless the results are cached i.e. in memcached). It happens once for every thumbnail generation. That's why it is advised to use caching!
+
+[[BR]]
+
+=== Advanced: Thumbnailer ===
+
+The execution and dispatching of transformations is done in {{{gujThumbnailer}}} which should be suitable for all of your requirements.
+
+Though there might be some occasions that require you to implement [#Advanced:Complextransformationparameters Complex transformation parameters] or [#Howtowriteyourowntransformations Custom transformations]. If you have that kind of requirements you can easily extend {{{gujThumbnailer}}} and configure {{{gujThumbnailsPlugin}}} to use your class instead:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    thumbnailer_class:          <yourClassName>
+}}}
+
+Let's assume you want to alter the {{{app.yml}}} parameters for your custom transformation {{{mytransformation}}}:
+
+{{{
+#!php
+// /lib/thumbnailer/myThumbnailer.class.php
+class myThumbnailer extends gujThumbnailer
+{
+  public function prepareParametersForMytransformation($sourceImage, $parameters)
+  {
+    // to something with the parameters array
+    return $parameters;
+  }
+}
+}}}
+
+Now you can use this class by setting the thumbnailer_class:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    thumbnailer_class:          myThumbnailer
+}}}
+
+[[BR]]
+
+=== Advanced: Complex transformation parameters ===
+
+All transformation parameters can be configured in your [#Thumbnailformats app.yml].
+
+There are however occasions where a simple yml syntax is not enough.
+
+For example some transformations might expect an object as a parameter or for your overlay images you don't want to specify the resources directory for every overlay transformation.
+
+The solution here are callback methods defined on your [#Advanced:Thumbnailer thumbnailer class].
+
+For prepending the configured [#Pathsanddirectories resources directory] to your watermarking images {{{gujThumbnailer}}} already includes such a callback method: {{{prepareParametersForOverlay}}}.
+
+{{{
+#!php
+/**
+ * Callback function to extend/alter parameters as given in your app.yml.
+ *
+ * This callback adds the resources path to an overlay image
+ *
+ * @param  sfImage $sourceImage The original image
+ * @param  array   $parameters  Configured parameters for this transformation
+ * @return array   $parameters  Extended/altered parameters
+ */
+private function prepareParametersForOverlay($sourceImage, $parameters)
+{
+  if(array_key_exists('overlay', $parameters))
+  {
+    $parameters['overlay'] = new sfImage($this->options['resources_dir'].'/'.$parameters['overlay']);
+  }
+  return $parameters;
+}
+}}}
+
+Callback methods except two parameters, the current source image resource and the parameters of the current transformation.
+They return the parameters array after alteration.
+
+As a convention callback methods need to be named {{{prepareParametersFor<Transformation>}}} where <Transformation> is the name of the transformation you want to extend the parameters for.
+
+[[BR]]
+
+== Examples ==
+
+{{{gujThumbnailsPlugin}}} comes with two default formats:
+
+ * '''{{{default}}}''' prints a 404 image. {{{gujThumbnailsPlugin}} will fall back to this when the specified format is not configured.
+ * '''{{{original}}}''' will output the original image source
+
+If you want to have a look what can be done you can copy from the plugins {{{config/thumbnail_formats.yml.example}}} and have a look at the [#Howtoseeallexamplesofallformatsconfiguredinmyapplication demo].
+
+[[BR]]
+
+== Howtos ==
+
+In this section you will find common workflows and requirements to thumbnailing and how to deal with them.
+
+[[BR]]
+
+=== How to see all examples of all formats configured in my application ===
+
+{{{gujThumbnailsPlugin}}} comes with a demo mode that is automatically activated in your dev environment (and only there).
+
+It will show you examples for all thumbnail formats that are configured in your {{{app.yml}}}.
+
+You can browse to the demo with your dev controller only. i.e.: {{{http://yourdomain/dev.php/gujThumbnailsDemo}}}.
+
+[[BR]]
+
+=== How to remove generated thumbnails ===
+
+There are two ways to remove thumbnails: using the API or using a task.
+
+==== API Usage ====
+
+As thumbnails are stored using sfCache derivatives (i.e. sfFileCache, ..) we can use the caching API to remove thumbnails again capsulated within {{{gujThumbnailer}}}.
+
+To call the {{{remove()}}} method from your code you can do the following:
+
+{{{
+#!php
+$thumbnailerClass = sfConfig::get('gujThumbnailsPlugin_thumbnailer_class', 'gujThumbnailer');
+$thumbnailer = new $thumbnailerClass();
+$thumbnailer->remove();
+}}}
+
+There are four ways of removal.
+
+{{{
+#!php
+// 1. Remove all thumbnails
+$thumbnailer->remove();
+
+// 2. Remove all thumbnails of the same format
+$thumbnailer->remove('gallery_thumb');
+
+// 3. Remove all thumbnails for a single source image ID
+$thumbnailer->remove('*', 139);
+
+// 4. Remove all thumbnails of the same format for a single source image ID (usually only one file)
+$thumbnailer->remove('gallery_thumb', 139);
+}}}
+
+
+==== Task Usage ====
+
+The above API can also be accessed from the commandline interface using a symfony task.
+
+{{{
+#!sh
+$ ./symfony help wlcp:remove-thumbnails
+//  Usage:
+//   symfony wlcp:remove-thumbnails [--env[="..."]] [--format[="..."]] [--id[="..."]] [--no-confirmation[="..."]] application
+//  
+//  Aliases: wlcp-remove-thumbnails
+//  
+//  Arguments:
+//   application        The application name
+//  
+//  Options:
+//   --env              The environment (default: prod)
+//   --format           Limits the removal to a single format. Defaults to all. (default: *)
+//   --id               Limits the removal to a single ID. Defaults to all. (default: *)
+//   --no-confirmation  No confirmation before removal. (default: )
+//  
+//  Description:
+//   Removes thumbnails generated by gujThumbnailsPlugin.
+//  
+//     ./symfony wlcp:remove-thumbnails <appname>
+//     Removes all (!) generated thumbnails.
+//  
+//     ./symfony wlcp:remove-thumbnails <appname> --id=123
+//     Removes all thumbnails that originate from an image with the ID '123'.
+//  
+//     ./symfony wlcp:remove-thumbnails <appname> --format=rounded_corners
+//     Removes all thumbnails of the format 'rounded_corners'.
+//  
+//     ./symfony wlcp:remove-thumbnails <appname> --format=rounded_corners --id=123
+//     Removes the 'rounded_corners' thumbnail for image ID '123'.
+//  
+}}}
+
+You need to pass an {{{application}}} name so that the correct app.yml is loaded.
+
+[[BR]]
+
+=== How to serve thumbnails from a static server domain ===
+
+Static servers are common within a [http://en.wikipedia.org/wiki/Content_delivery_network Content Delivery Network] (CDN). They are used to serve static contents like images, javascripts and the like. This enables you to optimise the static webserver to a maximum without taking care of your application as it is completely separated.
+
+You can also use commercial CDNs like [http://en.wikipedia.org/wiki/Akamai_Technologies Akamai].
+
+In the default installation the URLs of all generated thumbnails are build relative to the current document root by the {{{guj_thumbnail()}}} helper.
+
+{{{
+#!html
+<img src="/images/gallery_thumb/39/01/00/michelle-obama-wears-homemade-knitwear-139.png" />
+}}}
+
+This is the case while the {{{static_image_host}}} setting in your app.yml are kept to the default:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    static_image_host:      ~
+}}}
+
+ * '''{{{static_image_host}}}''' defaults to null (~) but can be set to any fully qualified domain.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    static_image_host:      http://cdn-images.wlcp.de
+}}}
+
+The above would result for the same image as in the previous example like this:
+
+{{{
+#!html
+<img src="http://cdn-images.wlcp.de/images/gallery_thumb/39/01/00/michelle-obama-wears-homemade-knitwear-139.png" />
+}}}
+
+By doing this all your thumbnails will be automatically requested from {{{http://cdn-images.wlcp.de}}} where you can install a very lightweight webserver and tweak your caching settings without interfering with your application.
+
+> Please note that HTTP Caches often don't recognise static server domains as such when they are coming from the same IP address than the website itself.
+
+But we haven't yet explained how the generated thumbnails get there.
+
+There are several ways to achieve this. For once you can install your application twice; once for the website delivery and once for the static files. This way any request to a thumbnail on your static domain will lead to the generation of a file.
+
+You could also tweak your rewrite rules to generate thumbnails on your website server and make them available on your static server using a shared filesystem.
+
+Building a CDN depends much on your local settings so it is hard to give any advices here. However {{{gujThumbnailsPlugin}}} comes prepared.
+
+[[BR]]
+
+=== How to generate simple thumbnails ===
+
+In most cases you simply want to generate different sizes for your images. No special effects, so eyecandy.
+
+For this there are two transformations available: '''thumbnail''' and '''resize'''.
+'''thumbnail''' is just a convenient wrapper for '''resize'' and also handles cropping nicely.
+In most cases it will suit all your requirements.
+
+> When you want to do some more transformations your should stick to '''resize''' instead.
+
+The transformation '''thumbnail''' comes with some interesting methods:
+
+ * '''{{{fit}}}''' will fit your image within the dimensions you configured. The thumbnail.will have the exact dimensions you specified while unused space is filled with a background color
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_thumbnail_fit:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: fit }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_fit.jpg)]]
+
+[[BR]]
+
+ * '''{{{scale}}}''' will fit your image within the dimensions you configured. The thumbnail.will then betrimmed to the area filled with the original image
+
+{{{
+#!yml
+      demo_thumbnail_scale:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: scale, background: '#FF0000' }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_scale.jpg)]]
+
+[[BR]]
+
+ * '''{{{deflate}}}''' or '''{{{inflate}}}''' will streches your original image to the dimensions specified.
+
+{{{
+#!yml
+      demo_thumbnail_deflate:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: deflate, background: '#FF0000' }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_deflate.jpg)]]
+
+[[BR]]
+
+ * '''{{{left}}}''' will center and left align the original image on the specified dimensions overlapping parts will be cut off.
+
+{{{
+#!yml
+      demo_thumbnail_left:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: left, background: '#FF0000' }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_left.jpg)]]
+
+[[BR]]
+
+ * '''{{{right}}}''' will center and right align the original image on the specified dimensions overlapping parts will be cut off.
+
+{{{
+#!yml
+      demo_thumbnail_right:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: right, background: '#FF0000' }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_right.jpg)]]
+
+[[BR]]
+
+ * '''{{{center}}}''' will center the original image on the specified dimensions overlapping parts will be cut off.
+
+{{{
+#!yml
+      demo_thumbnail_center:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: thumbnail, param: { width: 100, height: 100, method: center, background: '#FF0000' }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(thumbnail_center.jpg)]]
+
+[[BR]]
+
+ * '''{{{top}}}''' will center and top align the original image on the specified dimensions overlapping parts will be cut off.
+ * '''{{{bottom}}}''' will center and bottom align the original image on the specified dimensions overlapping parts will be cut off.
+
+[[BR]]
+
+=== How to generate color effects on thumbnails ===
+
+In the unlikely case your design expects a certain color scheme you do have a lot of transformations to manipulate the colors of your images.
+
+ * '''{{{brightness}}}''' will dim or light your image
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_brightness:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: brightness, param: { brightness: 50 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(brightness.jpg)]]
+
+[[BR]]
+
+ * '''{{{colorize}}}''' will tint your image in a monochrome color
+
+{{{
+#!yml
+      demo_colorize:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: colorize, param: { red: 255, green: 0, blue: 0, alpha: 50 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(colorize.jpg)]]
+
+[[BR]]
+
+ * '''{{{contrast}}}''' will reduce or increase the contrast of your image
+
+{{{
+#!yml
+      demo_contrast_max:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: contrast, param: { contrast: -80 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(contrast_max.jpg)]]
+
+[[BR]]
+
+{{{
+#!yml
+      demo_contrast_min:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: contrast, param: { contrast: 50 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(contrast_min.jpg)]]
+
+[[BR]]
+
+ * '''{{{greyscale}}}''' will transform your image to greyscale
+
+{{{
+#!yml
+      demo_greyscale:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: greyscale, param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(greyscale.jpg)]]
+
+[[BR]]
+
+ * '''{{{gamma}}}''' will do some gamma manipulation
+
+{{{
+#!yml
+      demo_gamma:
+         quality:                75
+        mime_type:              image/jpg
+        transformations:
+           - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+           - { adapter: GD, transformation: gamma,  param: { input_gamma: 1.0, output_gamma: 1.6 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(gamma.jpg)]]
+
+[[BR]]
+
+ * '''{{{negate}}}''' will invert your image
+
+{{{
+#!yml
+      demo_gamma:
+         quality:                75
+        mime_type:              image/jpg
+        transformations:
+           - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+           - { adapter: GD, transformation: negate, param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(negate.jpg)]]
+
+[[BR]]
+
+For more advanced color manipulation you can use the following transformations:
+
+[[BR]]
+
+ * '''{{{edgeDetect}}}''' manipulate your image and intensify its edges
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_edgeDetect:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: edgeDetect, param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(edgeDetect.jpg)]]
+
+[[BR]]
+
+ * '''{{{emboss}}}''' will emboss your image
+
+{{{
+#!yml
+      demo_emboss:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: emboss, param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(emboss.jpg)]]
+
+[[BR]]
+
+=== How to twist and turn your thumbnails ===
+
+If you're not happy with the direction of an image you might want to flip, mirror or rotate it.
+
+ * '''{{{flip}}}''' will dim or light your image
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_flip:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: flip,   param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(flip.jpg)]]
+
+[[BR]]
+
+ * '''{{{mirror}}}''' will tint your image in a monochrome color
+
+{{{
+#!yml
+      demo_mirror:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: mirror, param: {}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(mirror.jpg)]]
+
+[[BR]]
+
+ * '''{{{rotate}}}''' will reduce or increase the contrast of your image
+
+{{{
+#!yml
+      demo_rotate:
+        quality:                75
+        mime_type:              image/jpg
+        transformations:
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: rotate, param: { angle: 50, background: '#00FF00' }}
+          - { adapter: GD, transformation: crop,   param: { left: 300, top: 300, width: 250, height: 200 }}}}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(rotate.jpg)]]
+
+[[BR]]
+
+=== How to generate thumbnails with rounded corners ===
+
+What would web2.0 be without rounded corners? ;)
+
+ * '''{{{rounded_corners}}}''' will round your corners transparently or with a specified background color.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_rounded_corners:
+        quality:                75
+        mime_type:              image/png
+        transformations:
+          - { adapter: GD, transformation: resize,         param: { width: 300, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: roundedCorners, param: { radius: 20 }}
+}}}
+
+[[Image(original.png)]]
+[[Image(equal-sign.png)]]
+[[Image(rounded_corners.png)]]
+
+[[BR]]
+
+=== How to do watermarking ===
+
+Here's a quick example how to place a static image on top of another.
+
+The example below shows a simple overlay image that watermarks your image with a WLCP logo which is located in the plugins example resources directory.
+
+> To use your own overlay images you have to add them to {{{<pathtoyourproject>/data/resources/}}}.
+
+ * '''{{{overlay}}}''' will place a (transparent) image on top of your image
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_overlay:
+        quality:                75
+        mime_type:              image/png
+        transformations:
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: overlay, param: { overlay: overlays/wlcp.png, position: top-right }}
+}}}
+
+[[Image(original.png)]]
+[[Image(plus-sign.png)]]
+[[Image(wlcp-logo.png)]]
+[[Image(equal-sign.png)]]
+[[Image(overlay.jpg)]]
+
+[[BR]]
+
+> Another interesting way to use this transformation would be to place icons on teaser[[BR]]
+> images so that those teaser images could indicate if the teased article contains text,[[BR]]
+> audio and/or video information.[[BR]]
+
+[[BR]]
+
+=== How to apply an alpha mask ===
+
+Sometimes you have complcated designs where a rectangle image simply doesn't fit.
+Maybe you need a gradient in you image that smoothly dissolves into the background of your page or you want to do some cool eyecandy effects.
+
+{{{gujThumbnailsPlugin}}} provides a transformation for this.
+You just place your greyscale mask image into your resource folder and add the {{{alphaMask}}} transformation to your thumbnail format setting:
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_alpha_mask_ pattern:
+        quality:                75
+        mime_type:              image/png
+        transformations:
+          - { adapter: GD, transformation: resize,    param: { width: 300, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: alphaMask, param: { mask: masks/frame.gif }}
+}}}
+
+The above uses {{{masks/frame.gif}}} which comes bundled with the plugin. It works like this:
+
+[[Image(original.png)]]
+[[Image(plus-sign.png)]]
+[[Image(pattern.gif)]]
+[[Image(equal-sign.png)]]
+[[Image(result_pattern.png)]]
+
+[[BR]]
+
+Another example using the other bundled mask image {{{mask/pattern.gif}}}.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+      demo_alpha_mask_frame:
+        quality:                75
+        mime_type:              image/png
+        transformations:
+          - { adapter: GD, transformation: resize,    param: { width: 300, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: alphaMask, param: { mask: masks/pattern.gif }}
+}}}
+
+This pattern applies like this:
+
+[[Image(original.png)]]
+[[Image(plus-sign.png)]]
+[[Image(frame.gif)]]
+[[Image(equal-sign.png)]]
+[[Image(result_frame.png)]]
+
+[[BR]]
+
+=== How to write your own transformations ===
+
+It is fairly easy to write your own transformation. There is one included in {{{gujThumbnailsPlugin}}} that produces thumbnails with rounded corners.
+
+You simply create a new class extending {{{sfImageTransformAbstract}}}. The class name must begin with {{{sfImage}}} and end with the name of the adapter you use therein (either {{{Generic}}}, {{{GD}}} or {{{ImageMagick}}}). There you need to define a protected method {{{transform(sfImage $image)}}} in which you implement your image manipulation.
+
+{{{
+#!php
+///sfImageMyTransformationGD.class.php
+
+class sfImageMyTransformationGD extends sfImageTransformAbstract
+{
+  /**
+   * Concrete method that performs the image manipulation.
+   *
+   * @param sfImage
+   * @return sfImage
+   */
+  protected function transform(sfImage $image);
+  {
+    // implement your image manipulation code here (in this case using GD)
+    return $image;
+  }
+}
+}}}
+
+For details refer to the 'Writing your own transforms' section of the {{{sfImageTransformPlugin}}} [http://www.symfony-project.org/plugins/sfImageTransformPlugin/1_2_0?tab=plugin_readme Readme].
+
+> Remember that you can chain transformations in your app.yml. So don't write too complex transformations if the same thing can be achieved with multiple simple transformations as they are way more likely to be reusable.
+
+[[BR]]
+
+=== How to translate your old thumbnail formats ===
+
+Before {{{gujThumbnailsPlugin}}} there was a custom implementation of thumbnailing available in the {{{WLCP}}}. To configure thumbnail formats you added settings to your {{{app.yml}} or better still your {{{thumbnails.yml}}}.
+
+{{{gujThumbnailsPlugin}}} kept this model of configuration but changed the yaml format so that transformations can be applied. This results in a very powerful thumbnailing and image manipulation feature but also breaks backward compatibility so  your old thumbnail format settings won't work out of the box!
+
+There is however a new task that can translate your old settings to the new format.
+
+{{{
+#!sh
+$ ./symfony wlcp:translate-old-thumbnails-config <<APPLICATION_NAME>
+}}}
+
+This task will create a new file {{{thumbnail_formats.yml}}} in your applications config directory. You can activate it by including it in your {{{app.yml}}}.
+
+{{{
+#!yml
+all:
+  gujThumbnailsPlugin:
+    formats:
+<?php @include(dirname(__FILE__).'/thumbnail_formats.yml'); ?>
+}}}
+
+Now all your old formats will be available using {{{gujThumbnailsPlugin}}}.
+
+Your specific configuration to add to your {{{app.yml}}} will be output at the end of the task.
+
+Once you replaced all occurances of the old thumbnailing with the new one you can savely remove the old settings as well.
+
+[[BR]]
+
+== Concept ==
+
+[[BR]]
+
+=== Performance ===
+
+Generating thumbnails is always a heavy operation that draws on a servers resources. There are three precautions to limit this behaviour.
+
+ 1. Generation on request [[BR]]
+    This is the easiest precaution to take. Some websites produce their thumbnails when the <img /> tag is generated in their HTML. This is dangerous as an error while generating a thumbnail will end the rendition of your web page. This is also a very likely behaviour as there are often multiple thumbnail <img /> tags on one page which ups the chances to hit a memory or execution time limit. [[BR]]
+    {{{gujThumbnailsPlugin}}} will generate thumbnails when they are being displayed within a single Apache/PHP process per thumbnail.
+ 2. Caching [[BR]]
+    Using a caching class like sfFileCache enhances the overall performance as the generated thumbnails will be cached and served from cache instead of being generated again.
+ 3. Content Delivery Network [[BR]]
+    As you can configure a different domain to host your thumbnails you can serve them from an optimised server. This is known as a static host. The tricky part is how tom get the thumbnails onto that server. See [#Howtoservethumbnailsfromastaticserverdomain How to serve thumbnails from a static server domain] for more details on that.
+
+[[BR]]
+
+=== I/O Usage ===
+
+Assuming that you use file caching to store your thumbnails on the local file system (if you't you can skip this section) you might be concerned for your I/O performance.
+
+It is easily possible that your website produces thousands if not millions of thumbnail images to be stored locally. If they would all be stored within a single directory almost every file system would become very inefficient as it will have to work a lot to manage that many inodes within on directory.
+
+This is where the ''ID path'' does its magic!
+
+In all thumbnail URLs there is a variable numeric part like {{{/39/01}}} or {{{/39/01/00}}} which is build from your original images ID.
+
+It automatically creates sub directories to a depth that you [#Pathsanddirectories configured].
+
+IDs will be zerofilled then split into chunks of 2 digits and then glued together again with directory separators in reverse order.
+
+{{{
+139 -> 000139 -> 00 01 39 -> /39/01/00/
+}}}
+
+You can see this id path in the follwoing example:
+
+{{{
+http://demo.wlcp.de/images/gallery_thumb/39/01/00/michelle-obama-wears-homemade-knitwear-139.png
+}}}
+
+This results in the even distribution of files to your file system.
+
+[[BR]]
+
+=== Open source strategy ===
+
+Implementing any kind of thumbnailing is an development effort. From an architectual perspective the efforts won't stop with the development but go along with a constant maintenance. Incorporating {{{sfImageTransformPlugin}}} - an Open Source component to symfony - reduces the efforts tremendously as it is already well developed and likely to be maintained by its community. The aim of reducing the complexity of our own developments is met by using an existing component.
+
+[[BR]]
+
+=== SEO considerations ===
+
+The naming scheme of the thumbnails URLs implements some SEO requirements. in order to find your images in i.e. Google image search images needs to have SEO relevant filenames and URLs. The following scheme implements [#IOUsage I/O thoughts] as well as a basic site structure.
+
+{{{
+http://<host>/<base_path>/<format>/##/##/[##/]<slug>-<id>.[jpg|gif|png]
+}}}
+
+With the textual {{{<slug>}}} part it also implements SEO requirements.
+
+The slug is a normalised string built from any descriptive text you have in store for your original image. The process of normalisation is done automatically and transforms every descriptive text into an SEO friendly filename.
+
+i.e.:
+{{{
+http://demo.wlcp.de/images/gallery_thumb/39/01/00/michelle-obama-wears-homemade-knitwear-139.png
+}}}
+
+Image searches for ''Michelle Obama'' or ''homemade knitwear'' would now consider your image amongst the result.
+
+[[BR]]
+
+== Next steps ==
+
+=== Integration in current and future content bridge ===
+
+One of the issues with the current content bridge is that updating an image binary on the CMS side does not re-generate new thumbnails.
+Moreover the changing of the images filename let to the generation of new thumbnails leaving the old ones still in the file system cluttering up space.
+
+As {{{gujThumbnailsPlugin}}} links thumbnails to their origin by ID only changes on the CMS side do lead to confusion. Also the powerfull [#Howtoremovegeneratedthumbnails removal feature] can now take care of automated removal when new versions are published.
+
+[[BR]]
+
+
+

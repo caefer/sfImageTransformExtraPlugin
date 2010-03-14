@@ -1,0 +1,3 @@
+all:
+  .settings:
+    cache_namespace_callable: sfImageTransformExtraPluginConfiguration::setCacheKey
