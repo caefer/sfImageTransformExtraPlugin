@@ -30,7 +30,7 @@ To install the plugin for a symfony project, the usual process is to use the sym
 
 symfony 1.4
 
-    symfony plugin:install sfImageTransformPlugin
+    symfony plugin:install sfImageTransformExtraPlugin
 
 Alternatively, if you don't have PEAR installed, you can download the latest package attached to this plugin's wiki page and extract it under your project's ``plugins/`` directory.
 
