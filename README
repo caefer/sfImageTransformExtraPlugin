@@ -2,6 +2,8 @@
 
 ![sfImageTransformExtraPlugin](http://www.symfony-project.org/uploads/plugins/4366ffec3f32548c30e31094c3dcbcea.png)
 
+> **THIS IS HIGHLY PRELIMINARY!**
+
 ## Introduction
 
 On a website you ususally find lots of images and a set of formats. Say a user avatar is always ``80x80 PNG`` while a homepage top image is always ``320x140 JPG`` with round corners. As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and more.
@@ -24,13 +26,66 @@ Here are some of the key features:
 *   Unit tested
 *   Easily to extend
 
+### Possibilities
+
+ADD source image and a small gallery of generated images on http://stat.ical.ly each with main transformation name and description
+
+### The URL structure
+
+The URLs of the generated images follow an SEO friendly schema like the following example.
+
+	// on your prod environment
+    http://yourhost/thumbnails/Article/topteaser/76/34/01/a-new-symfony-plugin-for-your-thumbnails-13476,0.jpg
+	// or for your dev environment
+    http://yourhost/frontend_dev.php/thumbnails/Article/topteaser/76/34/01/a-new-symfony-plugin-for-your-thumbnails-13476,0.jpg
+
+http://yourhost
+    The domain of your application or web service
+thumbnails
+    The root path of all generated images
+Article
+    The name of the model that holds the information about the source image file
+topteaser
+    The format name identifying the transformations of your configuration
+76/34/01
+    The folder structure that prevents a too high files per directory ratio
+a-new-symfony-plugin-for-your-thumbnails
+    The SEO part of the generated image URL. You can place any describing text here
+13476
+	The id of the object holding the information about the source image file
+0
+	The attribute number refering to the attribute the source image filename ist stored at
+jpg
+	The file extension
+
+### The caching mechanism
+
+Image generation is quite expansive in terms of CPU and memory. This is why sfsfImageTransformExtraPlugin by default stores generated images for the production environment on the filesystem.
+For this the custom cache class ``sfRawFileCache`` is used which is basically a copy of sfFileCache but does not prepend the cached file with expire time information but instead saves only the generated image.
+
+You can see the typical lifecycle of a generated image in the following Firebug screenshots.
+
+ADD firebug shot
+
+The image is generated, saved to the filesystem and sent to the requesting browser.
+
+ADD firebug shot
+
+The image is read directly from the filesystem without invoking a PHP process.
+
+ADD firebug shot
+
+Apache automatically informs the browser that the image has not been modified by sending a ``304`` status.
+
+As you can see the time needed to deliver a generated image after the second request is drastically reduced.
+
 ## Installation
 
 To install the plugin for a symfony project, the usual process is to use the symfony command line:
 
 symfony 1.4
 
-    symfony plugin:install sfImageTransformExtraPlugin
+    symfony plugin:install sfImageTransformPlugin
 
 Alternatively, if you don't have PEAR installed, you can download the latest package attached to this plugin's wiki page and extract it under your project's ``plugins/`` directory.
 
@@ -39,4 +94,114 @@ Clear the cache to enable the autoloading to find the new classes:
     php symfony cc
 
 Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well.
+
+### Configuration
+
+First you need to create a directory for storing the generated images in your prod environment and create a symlink to it calles ``thumbnails``.
+
+    $ cd /path/to/your/project/web
+    $ mkdir uploads/sfImageTransformExtraPlugin
+    $ chmod 777 uploads/sfImageTransformExtraPlugin
+    $ ln -s uploads/sfImageTransformExtraPlugin thumbnails
+
+Now you need to enable the ``sfImageTransformator`` module in your applications ``settings.yml``.
+
+    all:
+      .settings:
+        enabled_modules: [ sfImageTransformator ]
+
+You also need to configure automatic mime detection for sfImageTransformPlugin in your applications ``app.yml``.
+
+    all:
+      sfImageTransformPlugin:
+        ..
+
+## Using sfImageTransformExtraPlugin
+
+Using this plugin can be done by three easy steps:
+
+### 1. Prepare your Doctrine models to produce thumbnails
+
+    MyModel:
+      actAs:
+        Thumnailing:
+          fields: [ file ]
+      columns:
+        ...
+
+
+
+### 2. Configure the format
+
+    formats:
+      icon:
+        mime_type: gif
+        quality:   10
+        transformations:
+          - { method: resize, param: { width: 16, height: 16, method: scale } }
+
+**Examples can be found at ``sfImageTransformExtraPlugin/config/thumbnail_formats.yml.example``.**
+
+### 3. Use the format in your templates
+
+    <?php echo image_tag(url_for(...), array());
+
+If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
+
+    <?php echo image_tag('http://your.webservice.url'.url_for(...), array());
+
+### Invalidating generated images
+
+trigger event
+run task
+
+see also twiggering invalidation when using sfImageTransformExtraPlugin as a web service further down in this document.
+
+## Advanced usage:
+
+### How can I use static resources like fonts, alpha masks and overlay images?
+
+### How can I change the default URL schema (route) ?
+
+In your application you can create a new route ``sf_image_transformator`` in your ``routing.yml``. You can copy it from the plugin or from the following example.
+
+   sf_image_transformator:
+     url:   /thumbnails/:type/:format/:path/:slug-:id,:attribute.:sf_format
+	 param: { module: sfImageTransformator, action: index }
+
+### How can I run sfImageTransformExtraPlugin as a web service?
+
+To run sfImageTransformExtraPlugin as a web service you create a new symfony installation and install the plugin as described in the previous chapter.
+
+You then have to create a configuration file called ``thumbnailing.yml`` in your applications config directory with the following contents:
+
+    all:
+      source_image:
+        class: sfImageSourceHTTP
+        param:
+          url_schema: http://yourhost/%type/%id/%attribute
+
+As the invalidation of the generated images can not be triggered with an event you will have to create a new route that can be called as a trigger.
+
+EXAMPLE
+
+### How can I use a custom image source?
+
+write a new stream wrapper
+
+### How can I configure a transformation that needs an object for a parameter?
+
+prepareParameters()
+
+### How can I run the tests?
+
+    $ cd /path/to/sfImageTransformExtraPlugin
+	$ phpunit --tap test/sfImageTransformExtraPluginsTests.php
+
+### How can I generate the API documentation?
+
+    $ cd /path/to/sfImageTransformExtraPlugin
+    $ phpdoc ...
+
+### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?
 
