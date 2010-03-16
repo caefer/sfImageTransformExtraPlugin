@@ -34,7 +34,6 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
     }
 
     $this->dispatcher->connect('context.load_factories', array('sfImageTransformExtraPluginConfiguration', 'registerStreamWrapper'));
-    $this->dispatcher->connect('routing.load_configuration', array('sfImageTransformExtraPluginConfiguration', 'prependRoutes'));
     $this->dispatcher->connect('controller.change_action', array('sfImageTransformExtraPluginConfiguration', 'setViewCache'));
     $this->dispatcher->connect('sf_image_transform.changed_source', array('sfImageTransformExtraPluginConfiguration', 'removeOldThumbnails'));
   }
@@ -108,44 +107,6 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
     }
     $streamwrapper = sfConfig::get('thumbnailing_source_image_stream_class', 'sfImageSourceMock');
     stream_wrapper_register('sfImageSource', $streamwrapper) or die('Failed to register protocol..');
-  }
-
-  /**
-   * Prepends default route for generated images
-   *
-   * @static
-   * @param  sfEvent $event Event object as passed by symfony event system
-   *
-   * @return void
-   */
-  static public function prependRoutes(sfEvent $event)
-  {
-    $routing = $event->getSubject();
-    $routes  = $routing->getRoutes();
-
-    if(!array_key_exists('sf_image', $routes))
-    {
-      $routing->prependRoute('sf_image',
-        new sfImageTransformRoute(
-          '/thumbnails/:type/:format/:path/:slug-:id.:sf_format',
-          array(
-            'module' => 'sfImageTransformator',
-            'action' => 'index'
-          ),
-          array(
-            'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
-            'path' => '[\\w/]+',
-            'slug' => '[\\w_-]+',
-            'id' => '\d+(?:,\d+)?',
-            'sf_format' => 'gif|png|jpg',
-            'sf_method' => array('get')
-          ),
-          array(
-            'segment_separators' => array('/', '.', '-')
-          )
-        )
-      );
-    }
   }
 
   /**

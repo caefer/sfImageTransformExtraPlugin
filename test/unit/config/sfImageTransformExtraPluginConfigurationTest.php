@@ -29,14 +29,12 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
   {
     $dispatcher = $this->projectConfiguration->getEventDispatcher();
     $load_factories = count($dispatcher->getListeners('context.load_factories'));
-    $load_configuration = count($dispatcher->getListeners('routing.load_configuration'));
     $change_action = count($dispatcher->getListeners('controller.change_action'));
     $changed_source = count($dispatcher->getListeners('sf_image_transform.changed_source'));
 
     $this->pluginConfiguration->initialize();
 
     $this->assertEquals($load_factories + 1, count($dispatcher->getListeners('context.load_factories')));
-    $this->assertEquals($load_configuration + 1, count($dispatcher->getListeners('routing.load_configuration')));
     $this->assertEquals($change_action + 1, count($dispatcher->getListeners('controller.change_action')));
     $this->assertEquals($changed_source + 1, count($dispatcher->getListeners('sf_image_transform.changed_source')));
   }
@@ -65,15 +63,6 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
     $event = new sfEvent($this, 'context.load_factories', array());
     sfImageTransformExtraPluginConfiguration::registerStreamWrapper($event);
     $this->assertTrue(in_array('sfImageSource', stream_get_wrappers()));
-  }
-
-  public function testPrependRoutes()
-  {
-    $routing = new sfPatternRouting($this->projectConfiguration->getEventDispatcher());
-    $routing->clearRoutes();
-    $event = new sfEvent($routing, 'routing.load_configuration', array());
-    sfImageTransformExtraPluginConfiguration::prependRoutes($event);
-    $this->assertTrue($routing->hasRouteName('sf_image'));
   }
 
   public function testRemoveOldThumbnails()

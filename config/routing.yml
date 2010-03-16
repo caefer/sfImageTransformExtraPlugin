@@ -1,0 +1,13 @@
+sf_image:
+  class: sfImageTransformRoute
+  url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
+  param: { module: sfImageTransformator, action: index }
+  requirements:
+    format:    '[\w_-]+(?:,[\w_-]+(?:,[\w_-]+)?)?'
+    path:      '[\w/]+'
+    slug:      '[\w_-]+'
+    id:        '\d+(?:,\d+)?'
+    sf_format: gif|png|jpg
+    sf_method: [ get ]
+  options:
+    segment_separators: [ '/', '.', '-' ]
