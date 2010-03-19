@@ -1,0 +1,14 @@
+ * put cache class into factories.yml
+ * HTTP cache
+ * remove sfImageTransformExtraPluginConfiguration::setCacheKey()
+ * write more tests to produce image urls
+ * rename sfImageSourceTemplate to sfImageSource
+ * refactor sfImageSourceTemplate::getPath() to use primary key instead of 'id'
+ * find out about propel behaviours in sf 1.4
+ * remove or think over
+   modules/sfImageTransformator/config/factories.yml -> check if readable so it can be set from plugin configuration class
+   data/example-resources/overlays/wlcp.png -> replace with plugin logo!
+   data/example-resources/fonts/accid___.ttf -> free font!
+   data/example-resources/masks/pattern.gif -> 
+   data/example-resources/masks/frame.gif -> transparent caefer over text
+   data/caefer.jpg -> caefer image
