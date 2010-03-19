@@ -1,19 +1,9 @@
 prod:
 
-test:
-  source_image_stream:
-    class:                          sfImageSourceMock
-
 all:
   static_image_host:                ~
   web_dir:                          /thumbnails
   id_path_depth:                    3
-  source_image_stream:
-  #  class:                          sfImageSourceMock
-    class:                          sfImageSourceDoctrine
-  #  class:                          sfImageSourceHTTP
-  #  param:
-  #    url_schema:                   http://symfon.ical.ly/source-image/%type/%attribute/%id
 
   .settings:
     formats:

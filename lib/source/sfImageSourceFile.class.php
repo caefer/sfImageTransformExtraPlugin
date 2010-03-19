@@ -12,13 +12,13 @@
  */
 
 /**
- * Maps sfImageSource:// URLs to files indicated by Doctrine Models
+ * Maps sfImageSource:// URLs to an image file
  *
  * @package    sfImageTransformExtraPlugin
  * @subpackage source
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class sfImageSourceDoctrine implements sfImageSourceInterface
+class sfImageSourceFile implements sfImageSourceInterface
 {
   /**
    * resource context
@@ -135,35 +135,37 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
       return $this->filename;
     }
 
-    $url = parse_url($path);
-    if(!($table = Doctrine::getTable($url['host'])))
+    $url  = parse_url($path);
+    $pos  = strrpos($url['path'], '/');
+    $path = substr($url['path'], 0, $pos);
+    $file = substr($url['path'], $pos+1);
+    $files = sfFinder::type('file')->name($file.'*')->in(sfConfig::get('sf_upload_dir').$path);
+
+    if(!count($files))
     {
-      throw new sfError404Exception('Could not find Doctrine table "'.$url['host'].'"');
+      throw new sfError404Exception('Could not find image "'.$url['host'].'"');
     }
-    
-    if(!($obj = $table->find($url['fragment'])))
-    {
-      throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
-    }
-    $attribute = ltrim($url['path'], '/');
-    return sfConfig::get('sf_upload_dir').'/'.strtolower($url['host']).'/'.$obj->retrieveFilenameForAttribute($attribute);
+
+    $this->filename = $files[0];
+
+    return $this->filename;
   }
 
   /**
-   * Returns an sfImageSource:// URL pointing to a file which path is stored on a Doctrine object
+   * Returns an sfImageSource:// URL pointing to a file on the local filesystem
    *
-   * @param  array  $parameters Current request parameters (expected: type, attribute, id)
+   * @param  array  $parameters Current request parameters (expected: filepath)
    * @return string sfImageSource:// URI
    * @throws InvalidArgumentException
    */
   public static function buildURIfromParameters(array $parameters)
   {
     // all params must be given
-    if ($diff = array_diff(array('type', 'attribute', 'id'), array_keys($parameters)))
+    if (!array_key_exists('filepath', $parameters))
     {
-      throw new InvalidArgumentException(sprintf('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (%s).', implode(', ', $diff)));
+      throw new InvalidArgumentException('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (filepath).');
     }
 
-    return sprintf('sfImageSource://%s/%s#%s', $parameters['type'], $parameters['attribute'], $parameters['id']);
+    return sprintf('sfImageSource://file/%s', $parameters['filepath']);
   }
 }

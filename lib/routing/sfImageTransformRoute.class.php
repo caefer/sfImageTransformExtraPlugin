@@ -83,18 +83,13 @@ class sfImageTransformRoute extends sfRequestRoute
     }
   }
 
-  /**
-   * Binds the current route for a given context and parameters.
-   *
-   * @param array $context    The context
-   * @param array $parameters The parameters
-   */
-  public function bind($context, $parameters)
+  public function getImageSourceStreamWrapper()
   {
-    $idAndAttribute = explode(',', $parameters['id']);
-    $parameters['id'] = $idAndAttribute[0];
-    $parameters['attribute'] = (2 == count($idAndAttribute)) ? $idAndAttribute[1] : '0';
+    return 'sfImageSource'.$this->options['image_source'];
+  }
 
-    parent::bind($context, $parameters);
+  public function getImageSourceURI()
+  {
+    return call_user_func(array($this->getImageSourceStreamWrapper(), 'buildURIfromParameters'), $this->parameters);
   }
 }

@@ -84,4 +84,13 @@ interface sfImageSourceInterface
    * @return array
    */
   public function url_stat($path , $flags);
+
+  /**
+   * Returns an sfImageSource:// URL specific to the implementing stream wrapper
+   *
+   * @param  array  $parameters Current request parameters
+   * @return string sfImageSource:// URI
+   * @throws InvalidArgumentException
+   */
+  public static function buildURIfromParameters(array $parameters);
 }

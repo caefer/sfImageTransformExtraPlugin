@@ -131,10 +131,24 @@ class sfImageSourceHTTP implements sfImageSourceInterface
   {
     $options = sfConfig::get('thumbnailing_source_image_stream_param');
     $path = parse_url($path);
-    return str_replace(
-      array('%type', '%attribute', '%id'),
-      array($path['host'], ltrim($path['path'], '/'), $path['fragment']),
-      $options['url_schema']
-    );
+    return sprintf('%s:/%s/%s', $path['host'], $path['path'], $path['fragment']);
+  }
+
+  /**
+   * Returns an sfImageSource:// URL pointing to a file read over HTTP
+   *
+   * @param  array  $parameters Current request parameters (expected: protocol, domain, filepath)
+   * @return string sfImageSource:// URI
+   * @throws InvalidArgumentException
+   */
+  public static function buildURIfromParameters(array $parameters)
+  {
+    // all params must be given
+    if ($diff = array_diff(array('protocol', 'domain', 'filepath'), array_keys($parameters)))
+    {
+      throw new InvalidArgumentException('The sf_image for image_source "HTTP" route has some missing mandatory parameters (url).');
+    }
+
+    return sprintf('sfImageSource://%s/%s#%s', $parameters['protocol'], $parameters['domain'], $parameters['filepath']);
   }
 }

@@ -50,20 +50,14 @@ class sfImageTransformManager
    * options configured in the thumbnailing.yml and uses them to call sfImageTransformPlugins transformations.
    * Additionally the generated thumbnail can be cached.
    *
+   * @param  string  $uri     Image source URI (sfImageSource://...)
    * @param  array   $options Thumbnail parameters taken from the thumbnail URL referencing a format and id
    * @return sfImage
    */
-  public function generate($options = array())
+  public function generate($uri, $format)
   {
-    if (!array_key_exists($options['format'], $this->options['formats']))
-    {
-      sfContext::getInstance()->getLogger()->warning('{' . __CLASS__ . '} [' . __FUNCTION__ . '] Format "' . $options['format'] . '" unknown. Using "default" instead.');
-      $options['format'] = 'default';
-    }
-
-    $sourceImage    = $this->getSourceImage($options);
-
-    $settings       = $this->options['formats'][$options['format']];
+    $sourceImage = new sfImage($uri);
+    $settings    = $this->options['formats'][$format];
 
     if(array_key_exists('mime_type', $settings))
     {
@@ -142,18 +136,6 @@ class sfImageTransformManager
     }
 
     return $parameters;
-  }
-
-  /**
-   * Returns the image source stream for the given options
-   *
-   * @param  array   $options Array of options
-   * @return sfImage
-   */
-  private function getSourceImage($options)
-  {
-    $sourceImageFile = 'sfImageSource://'.$options['type'].'/'.$options['attribute'].'#'.$options['id'];
-    return  new sfImage($sourceImageFile);
   }
 
   /**

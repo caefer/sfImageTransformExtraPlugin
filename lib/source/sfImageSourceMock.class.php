@@ -118,4 +118,16 @@ class sfImageSourceMock implements sfImageSourceInterface
   {
     return stat(dirname(__FILE__).$this->filename);
   }
+
+  /**
+   * Returns an sfImageSource:// URL pointing to a single mock file within this plugin
+   *
+   * @param  array  $parameters Current request parameters (expected: ~)
+   * @return string sfImageSource:// URI
+   * @throws InvalidArgumentException
+   */
+  public static function buildURIfromParameters(array $parameters)
+  {
+    return 'sfImageSource://mock';
+  }
 }

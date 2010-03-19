@@ -33,7 +33,7 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
       require_once($this->configuration->getConfigCache()->checkConfig('config/thumbnailing.yml'));
     }
 
-    $this->dispatcher->connect('context.load_factories', array('sfImageTransformExtraPluginConfiguration', 'registerStreamWrapper'));
+    //$this->dispatcher->connect('context.load_factories', array('sfImageTransformExtraPluginConfiguration', 'registerStreamWrapper'));
     $this->dispatcher->connect('controller.change_action', array('sfImageTransformExtraPluginConfiguration', 'setViewCache'));
     $this->dispatcher->connect('sf_image_transform.changed_source', array('sfImageTransformExtraPluginConfiguration', 'removeOldThumbnails'));
   }

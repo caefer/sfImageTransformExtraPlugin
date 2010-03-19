@@ -30,12 +30,19 @@ abstract class BasesfImageTransformatorActions extends sfActions
    */
   public function executeIndex(sfWebRequest $request) 
   {
-    $options = $this->prepareOptions($request);
+    if(in_array('sfImageSource', stream_get_wrappers()))
+    {
+      stream_wrapper_unregister('sfImageSource');
+    }
+    $streamwrapper = $this->getRoute()->getImageSourceStreamWrapper();
+    stream_wrapper_register('sfImageSource', $streamwrapper) or die('Failed to register protocol..');
 
-    $response = $this->getResponse();
     $formats = sfConfig::get('thumbnailing_formats', array());
     $thumbnailer = new sfImageTransformManager($formats);
-    $thumbnail = $thumbnailer->generate($options);
+    $uri = $this->getRoute()->getImageSourceURI();
+    $thumbnail = $thumbnailer->generate($uri, $request->getParameter('format', 'default'));
+
+    $response = $this->getResponse();
     $response->setContentType($thumbnail->getMIMEType());
     $response->setContent($thumbnail->toString());
 
