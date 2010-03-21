@@ -3,7 +3,7 @@ sf_image_doctrine:
   url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
   param: { module: sfImageTransformator, action: index, attribute: file }
   requirements:
-    format:    '[\w_-]+(?:,[\w_-]+(?:,[\w_-]+)?)?'
+    format:    '[\w_-]+'
     path:      '[\w/]+'
     slug:      '[\w_-]+'
     id:        '\d+(?:,\d+)?'
@@ -19,7 +19,7 @@ sf_image_file:
   param: { module: sfImageTransformator, action: index }
   requirements:
     format:    '[\w_-]+'
-    filepath:  '[\w/]+'
+    filepath:  '[\w/.]+'
     sf_format: 'gif|png|jpg'
     sf_method: [ get ]
   options:
@@ -27,13 +27,13 @@ sf_image_file:
 
 sf_image_http:
   class: sfImageTransformRoute
-  url:   /thumbnails/:format/:protocol/:domain/:filepath.:sf_format
-  param: { module: sfImageTransformator, action: index }
+  url:   /thumbnails/site/:format/:filepath.:sf_format
+  param: { module: sfImageTransformator, action: index, protocol: http, domain: localhost }
   requirements:
     format:    '[\w_-]+'
-    sf_format: http|https
+    protocol:  'http|https'
     domain:    '[\w-_.]+'
-    filepath:  '[\w/-_.]+'
+    filepath:  '[\w-_/.]+'
     sf_format: 'gif|png|jpg'
     sf_method: [ get ]
   options:

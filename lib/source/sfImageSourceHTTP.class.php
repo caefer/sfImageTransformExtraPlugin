@@ -75,7 +75,7 @@ class sfImageSourceHTTP implements sfImageSourceInterface
    */
   public function stream_open($path , $mode , $options , &$opened_path)
   {
-    $this->resource = fopen(self::getURL($path), $mode);
+    $this->resource = fopen($this->translatePathToFilename($path), $mode);
     return false !== $this->resource;
   }
 
@@ -121,20 +121,6 @@ class sfImageSourceHTTP implements sfImageSourceInterface
   }
 
   /**
-   * Translates the current sfImage:// URI to a http:// location
-   *
-   * @static
-   * @param  string $path
-   * @return string
-   */
-  public static function getURL($path)
-  {
-    $options = sfConfig::get('thumbnailing_source_image_stream_param');
-    $path = parse_url($path);
-    return sprintf('%s:/%s/%s', $path['host'], $path['path'], $path['fragment']);
-  }
-
-  /**
    * Returns an sfImageSource:// URL pointing to a file read over HTTP
    *
    * @param  array  $parameters Current request parameters (expected: protocol, domain, filepath)
@@ -150,5 +136,18 @@ class sfImageSourceHTTP implements sfImageSourceInterface
     }
 
     return sprintf('sfImageSource://%s/%s#%s', $parameters['protocol'], $parameters['domain'], $parameters['filepath']);
+  }
+
+  /**
+   * Translates the given stream URL to the abolute path of the source image
+   *
+   * @param  string $path The given stream URL
+   * @return string
+   */
+  private function translatePathToFilename($path)
+  {
+    $options = sfConfig::get('thumbnailing_source_image_stream_param');
+    $path = parse_url($path);
+    return sprintf('%s:/%s/%s', $path['host'], $path['path'], $path['fragment']);
   }
 }

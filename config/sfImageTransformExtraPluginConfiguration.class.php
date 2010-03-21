@@ -33,7 +33,6 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
       require_once($this->configuration->getConfigCache()->checkConfig('config/thumbnailing.yml'));
     }
 
-    //$this->dispatcher->connect('context.load_factories', array('sfImageTransformExtraPluginConfiguration', 'registerStreamWrapper'));
     $this->dispatcher->connect('controller.change_action', array('sfImageTransformExtraPluginConfiguration', 'setViewCache'));
     $this->dispatcher->connect('sf_image_transform.changed_source', array('sfImageTransformExtraPluginConfiguration', 'removeOldThumbnails'));
   }
@@ -89,24 +88,6 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
       'automatic_cleaning_factor' => 0,
       'cache_dir' => sfConfig::get('sf_web_dir')
     ));
-  }
-
-  /**
-   * Registers the sfImageSource:// protocol stream wrapper
-   *
-   * @static
-   * @param  sfEvent $event Event object as passed by symfony event system
-   *
-   * @return void
-   */
-  static public function registerStreamWrapper(sfEvent $event)
-  {
-    if(in_array('sfImageSource', stream_get_wrappers()))
-    {
-      stream_wrapper_unregister('sfImageSource');
-    }
-    $streamwrapper = sfConfig::get('thumbnailing_source_image_stream_class', 'sfImageSourceMock');
-    stream_wrapper_register('sfImageSource', $streamwrapper) or die('Failed to register protocol..');
   }
 
   /**

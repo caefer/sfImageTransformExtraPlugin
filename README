@@ -1,12 +1,16 @@
+﻿> **THIS IS HIGHLY PRELIMINARY!**
+
 # Image manipulation made even easier - sfImageTransformExtraPlugin
 
 ![sfImageTransformExtraPlugin](http://www.symfony-project.org/uploads/plugins/4366ffec3f32548c30e31094c3dcbcea.png)
 
-> **THIS IS HIGHLY PRELIMINARY!**
-
 ## Introduction
 
-On a website you ususally find lots of images and a set of formats. Say a user avatar is always ``80x80 PNG`` while a homepage top image is always ``320x140 JPG`` with round corners. As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and more.
+On a website you ususally find lots of images and a set of formats.
+
+For example let's say a user avatar is always ``80x80 PNG`` while a homepage top image is always ``320x140 JPG`` with round corners.
+
+As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and more.
 
 Using such an automatism means you have to write code and perform all necessary transformation on upload, no matter if the generated files are ever requested. It also means that design changes that also change the formats lead to change of business logic rather than just templates.
 
@@ -20,43 +24,65 @@ Here are some of the key features:
 *   Unobstrusive implementation (No need to write code)
 *   Generating images on request
 *   Can be run as a web service for a content delivery network (CDN)
-*   Supporting image file sources from Doctrine and remote files
-*   SEO friendly URLs
+*   Supporting image file sources stored in databases via Doctrine or Propel, remote files and more
+*   Full control over the thumbnail URLs
 *   Generated API documentation
 *   Unit tested
-*   Easily to extend
+*   Easy to extend
 
-### Possibilities
+## A quick demonstration
 
-ADD source image and a small gallery of generated images on http://stat.ical.ly each with main transformation name and description
+Consider the following source image.
 
-### The URL structure
+![original](http://stat.ical.ly/thumbnails/original.jpg "No Transformation")  
 
-The URLs of the generated images follow an SEO friendly schema like the following example.
+Here are just a few examples that were all transformed from the above image.
 
-	// on your prod environment
-    http://yourhost/thumbnails/Article/topteaser/76/34/01/a-new-symfony-plugin-for-your-thumbnails-13476,0.jpg
-	// or for your dev environment
-    http://yourhost/frontend_dev.php/thumbnails/Article/topteaser/76/34/01/a-new-symfony-plugin-for-your-thumbnails-13476,0.jpg
+![resize](http://stat.ical.ly/thumbnails/resize.jpg "Resize Transformation")
+![fit](http://stat.ical.ly/thumbnails/fit.jpg "Thumbnail Fit Transformation")
+![crop](http://stat.ical.ly/thumbnails/crop.jpg "Crop Transformation")
+![flip](http://stat.ical.ly/thumbnails/flip.jpg "Flip Transformation")
+![rotate](http://stat.ical.ly/thumbnails/rotate.jpg "Rotate Transformation")
+![mirror](http://stat.ical.ly/thumbnails/mirror.jpg "Mirror Transformation")  
+![border](http://stat.ical.ly/thumbnails/border.jpg "Border Transformation")
+![line](http://stat.ical.ly/thumbnails/line.jpg "Line Transformation")
+![rectangle](http://stat.ical.ly/thumbnails/rectangle.jpg "Rectangle Transformation")
+![arc](http://stat.ical.ly/thumbnails/arc.jpg "Arc Transformation")
+![ellipse](http://stat.ical.ly/thumbnails/ellipse.jpg "Ellipse Transformation")
+![overlay](http://stat.ical.ly/thumbnails/overlay.jpg "Overlay Transformation")  
+![colorize](http://stat.ical.ly/thumbnails/colorize.jpg "Colorize Transformation")
+![contrast](http://stat.ical.ly/thumbnails/contrast.jpg "Contrast Transformation")
+![edgeDetect](http://stat.ical.ly/thumbnails/edgeDetect.jpg "Edge Detect Transformation")
+![emboss](http://stat.ical.ly/thumbnails/emboss.jpg "Emboss Transformation")
+![greyscale](http://stat.ical.ly/thumbnails/greyscale.jpg "Greyscale Transformation")
+![negate](http://stat.ical.ly/thumbnails/negate.jpg "Negate Transformation")  
+![opacity](http://stat.ical.ly/thumbnails/opacity.jpg "Opacity Transformation")
+![noise](http://stat.ical.ly/thumbnails/noise.jpg "Noise Transformation")
+![blur](http://stat.ical.ly/thumbnails/blur.jpg "Blur Transformation")
+![pixelize](http://stat.ical.ly/thumbnails/pixelize.jpg "Pixelize Transformation")
+![scatter](http://stat.ical.ly/thumbnails/scatter.jpg "Scatter Transformation")
+![sketchy](http://stat.ical.ly/thumbnails/sketchy.jpg "Sketchy Transformation")  
+![text](http://stat.ical.ly/thumbnails/text.jpg "Text Transformation")
+![rounded_corners](http://stat.ical.ly/thumbnails/rounded_corners.gif "Rounded Corners Transformation")
+![reflection](http://stat.ical.ly/thumbnails/reflection.jpg "Reflection Transformation")
+![frame](http://stat.ical.ly/thumbnails/frame.png "Alpha Mask (Frame) Transformation")
+![pattern](http://stat.ical.ly/thumbnails/pattern.png "Alpha Mask (Pattern) Transformation")
+![just](http://stat.ical.ly/thumbnails/just.gif "Create & Text Transformation")  
 
-http://yourhost
-    The domain of your application or web service
-thumbnails
-    The root path of all generated images
-Article
-    The name of the model that holds the information about the source image file
-topteaser
-    The format name identifying the transformations of your configuration
-76/34/01
-    The folder structure that prevents a too high files per directory ratio
-a-new-symfony-plugin-for-your-thumbnails
-    The SEO part of the generated image URL. You can place any describing text here
-13476
-	The id of the object holding the information about the source image file
-0
-	The attribute number refering to the attribute the source image filename ist stored at
-jpg
-	The file extension
+## How does it work?
+
+The generation process that we designed so far works like this:
+
+1. An HTTP Request is made to a thumbnail
+2. All necessary parameters are parsed from the URL
+3. The requested source image is found
+4. The thumbnail gets generated according to the format specification
+5. The thumbnail gets cached (saved to disk)
+6. The thumbnail is send out to the user
+
+![Thumbnail request lifecycle](http://yuml.me/732e8bad)
+
+The thumbnail image is generated on the first request. All succeeding requests are coming from cache (per default the filesystem) and are served by Apache without spawning a PHP process.
 
 ### The caching mechanism
 
@@ -65,86 +91,158 @@ For this the custom cache class ``sfRawFileCache`` is used which is basically a 
 
 You can see the typical lifecycle of a generated image in the following Firebug screenshots.
 
-ADD firebug shot
+![firebug-1-generation](http://stat.ical.ly/thumbnails/firebug-1-generation.jpg "First request on a thumbnail triggering the generation and caching")  
 
 The image is generated, saved to the filesystem and sent to the requesting browser.
 
-ADD firebug shot
+![firebug-2-static](http://stat.ical.ly/thumbnails/firebug-2-static.jpg "Second request on a thumbnail already directly served from filesystem")  
 
 The image is read directly from the filesystem without invoking a PHP process.
 
-ADD firebug shot
+![firebug-3-notmodified](http://stat.ical.ly/thumbnails/firebug-3-notmodified.jpg "Third and succeeding requests on a thumbnail will be served from the browser cache")  
 
 Apache automatically informs the browser that the image has not been modified by sending a ``304`` status.
 
 As you can see the time needed to deliver a generated image after the second request is drastically reduced.
+(The times will vary on different installations.)
+
+The deletion of generated images use the sfCache interface and can be triggered by a task of a symfony event.
 
 ## Installation
 
 To install the plugin for a symfony project, the usual process is to use the symfony command line:
 
-symfony 1.4
-
-    symfony plugin:install sfImageTransformPlugin
+    $ php symfony plugin:install sfImageTransformExtraPlugin
 
 Alternatively, if you don't have PEAR installed, you can download the latest package attached to this plugin's wiki page and extract it under your project's ``plugins/`` directory.
 
-Clear the cache to enable the autoloading to find the new classes:
+Activate the plugin in your ``ProjectConfiguration.class.php``.
 
-    php symfony cc
+    // /config/ProjectConfiguration.class.php
+	...
+	$this->enablePlugins(..., 'sfImageTransformPlugin', 'sfImageTransformExtraPlugin');
+	...
 
-Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well.
+Enable the generating module in your ``settings.yml``.
 
-### Configuration
-
-First you need to create a directory for storing the generated images in your prod environment and create a symlink to it calles ``thumbnails``.
-
-    $ cd /path/to/your/project/web
-    $ mkdir uploads/sfImageTransformExtraPlugin
-    $ chmod 777 uploads/sfImageTransformExtraPlugin
-    $ ln -s uploads/sfImageTransformExtraPlugin thumbnails
-
-Now you need to enable the ``sfImageTransformator`` module in your applications ``settings.yml``.
-
+    // /apps/yourapplication/config/settings.yml
     all:
       .settings:
-        enabled_modules: [ sfImageTransformator ]
+        enabled_modules:        [ ..., sfImageTransformator ]
+	...
 
 You also need to configure automatic mime detection for sfImageTransformPlugin in your applications ``app.yml``.
 
+    // /apps/yourapplication/config/app.yml
     all:
       sfImageTransformPlugin:
-        ..
+        mime_type:
+          auto_detect:  true
+          library: 		gd_mime_type #  gd_mime_type (GD), Fileinfo (PECL), MIME_Type (PEAR)
+        font_dir: 		%SF_PLUGINS_DIR%/sfImageTransformExtraPlugin/data/example-resources/fonts
+	...
 
-## Using sfImageTransformExtraPlugin
+Automatic mime detection is absolutely necessary!
+Of course you can point the ``font_fir`` to your own location containing True Type Fonts.
 
-Using this plugin can be done by three easy steps:
+Clear the cache to enable the autoloading to find the new classes:
 
-### 1. Prepare your Doctrine models to produce thumbnails
+    $ php symfony cc
 
-    MyModel:
-      actAs:
-        Thumnailing:
-          fields: [ file ]
-      columns:
-        ...
+> Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well.
 
+Next you have to configure your routes.
 
+## Configuration for local image sources identified by filename
 
-### 2. Configure the format
+Your image sources lie in a directory accessible to your web server and you want to keep the filenames.
 
-    formats:
-      icon:
-        mime_type: gif
-        quality:   10
-        transformations:
-          - { method: resize, param: { width: 16, height: 16, method: scale } }
+Create a route like the following in your applications ``routing.yml``.
 
-**Examples can be found at ``sfImageTransformExtraPlugin/config/thumbnail_formats.yml.example``.**
+    // /apps/yourapplication/config/routing.yml
+	sf_image:
+      class: sfImageTransformRoute
+      url:   /thumbnails/:format/:filepath.:sf_format
+      param: { module: sfImageTransformator, action: index }
+      requirements:
+        format:    '[\w_-]+'
+        filepath:  '[\w/]+'
+        sf_format: 'gif|png|jpg'
+        sf_method: [ get ]
+      options:
+        image_source: File
+	...
 
-### 3. Use the format in your templates
+You can now generate ``<img />`` tags to these images like this.
 
-    <?php echo image_tag(url_for(...), array());
+    <?php
+    echo image_tag(url_for('sf_image_file', array('format' => 'pixelate', 'filepath' => 'logo.png')));
+	// resulting in: http://localhost/thumbnails/pixelate/logo.png.jpg
+	?>
+
+> Please note that the filepath is expected relative to ``sf_upload_dir``!
+
+## Configuration for local image sources linked by a Doctrine or Propel record
+
+Your image sources lie in a directory accessible to your web server and you want to keep the filenames.
+
+Create a route like the following in your applications ``routing.yml``.
+
+    // /apps/yourapplication/config/routing.yml
+    sf_image:
+      class: sfImageTransformRoute
+      url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
+      param: { module: sfImageTransformator, action: index, attribute: file }
+      requirements:
+        format:    '[\w_-]+'
+        path:      '[\w/]+'
+        slug:      '[\w_-]+'
+        id:        '\d+(?:,\d+)?'
+        sf_format: 'gif|png|jpg'
+        sf_method: [ get ]
+      options:
+        image_source: Doctrine
+        segment_separators: [ '/', '.', '-' ]
+ 	...
+
+You can now generate ``<img />`` tags to these images like this.
+
+    <?php
+    echo image_tag(url_for('sf_image_doctrine', array('format' => 'pixelate', 'sf_subject' => $record)));
+	// resulting in: http://localhost/thumbnails/News/pixelate/01/00/00/mytest-1.jpg
+	?>
+
+``$record`` in this example is either a Doctrine or Propel record.
+
+## Configuration for remote image sources to be read over HTTP
+
+Your image sources lie in a directory accessible to your web server and you want to keep the filenames.
+
+Create a route like the following in your applications ``routing.yml``.
+
+    // /apps/yourapplication/config/routing.yml
+    sf_image:
+      class: sfImageTransformRoute
+      url:   /thumbnails/sfweb/:format/:filepath.:sf_format
+      param: { module: sfImageTransformator, action: index, protocol: http, domain: www.symfony-project.org }
+      requirements:
+        format:    '[\w_-]+'
+        sf_format: http|https
+        domain:    '[\w-_.]+'
+        filepath:  '[\w/-_.]+'
+        sf_format: 'gif|png|jpg'
+        sf_method: [ get ]
+      options:
+        image_source: HTTP
+ 	...
+
+You can now generate ``<img />`` tags to these images like this.
+
+    <?php
+    echo image_tag(url_for('sf_image_http', array('format' => 'pixelate', 'filepath' => 'images/symfony-reloaded.png')));
+	// resulting in: http://localhost/thumbnails/sfweb/pixelate/images/symfony-reloaded.png.jpg
+	?>
+
 
 If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
 
@@ -203,5 +301,8 @@ prepareParameters()
     $ cd /path/to/sfImageTransformExtraPlugin
     $ phpdoc ...
 
-### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?
-
+  1 <?php echo image_tag(url_for('sf_image_mock', array('format' => 'border'))); ?>
+  2 <?php echo image_tag(url_for('sf_image_file', array('format' => 'border', 'filepath' => 'logo.png'))); ?>
+  3 <?php echo image_tag(url_for('sf_image_doctrine', array('format' => 'border', 'sf_subject' => $news))); ?>
+  4 <?php echo image_tag(url_for('sf_image_http', array('format' => 'border', 'protocol' => 'http', 'domain' => 'www.symfony-project.org', 'filepath' => '/image    s/symfony-reloaded.png'))); ?>
+~### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?

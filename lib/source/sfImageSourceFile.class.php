@@ -123,6 +123,24 @@ class sfImageSourceFile implements sfImageSourceInterface
   }
 
   /**
+   * Returns an sfImageSource:// URL pointing to a file on the local filesystem
+   *
+   * @param  array  $parameters Current request parameters (expected: filepath)
+   * @return string sfImageSource:// URI
+   * @throws InvalidArgumentException
+   */
+  public static function buildURIfromParameters(array $parameters)
+  {
+    // all params must be given
+    if (!array_key_exists('filepath', $parameters))
+    {
+      throw new InvalidArgumentException('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (filepath).');
+    }
+
+    return sprintf('sfImageSource://file/%s', $parameters['filepath']);
+  }
+
+  /**
    * Translates the given stream URL to the abolute path of the source image
    *
    * @param  string $path The given stream URL
@@ -149,23 +167,5 @@ class sfImageSourceFile implements sfImageSourceInterface
     $this->filename = $files[0];
 
     return $this->filename;
-  }
-
-  /**
-   * Returns an sfImageSource:// URL pointing to a file on the local filesystem
-   *
-   * @param  array  $parameters Current request parameters (expected: filepath)
-   * @return string sfImageSource:// URI
-   * @throws InvalidArgumentException
-   */
-  public static function buildURIfromParameters(array $parameters)
-  {
-    // all params must be given
-    if (!array_key_exists('filepath', $parameters))
-    {
-      throw new InvalidArgumentException('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (filepath).');
-    }
-
-    return sprintf('sfImageSource://file/%s', $parameters['filepath']);
   }
 }

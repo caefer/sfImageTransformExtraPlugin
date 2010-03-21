@@ -47,6 +47,12 @@ class sfImageTransformRoute extends sfRequestRoute
       $this->compile();
     }
 
+    if(!array_key_exists('sf_format', $object) && array_key_exists('format', $object))
+    {
+      $formats = sfConfig::get('thumbnailing_formats');
+      $object['sf_format'] = $this->get_suffix_for_mime_type($formats[$object['format']]['mime_type']);
+    }
+
     if (is_array($object))
     {
       if (!isset($object['sf_subject']))
@@ -73,12 +79,6 @@ class sfImageTransformRoute extends sfRequestRoute
     if(array_key_exists('path', $this->variables) && !array_key_exists('path', $parameters) && array_key_exists('id', $parameters))
     {
       $parameters['path'] = implode('/', array_reverse(str_split(str_pad($parameters['id'], 6, '0', STR_PAD_LEFT) , 2)));
-    }
-
-    if(!array_key_exists('sf_format', $parameters) && array_key_exists('format', $parameters))
-    {
-      $formats = sfConfig::get('thumbnailing_formats');
-      $parameters['sf_format'] = $this->get_suffix_for_mime_type($formats[$parameters['format']]['mime_type']);
     }
 
     return $parameters;

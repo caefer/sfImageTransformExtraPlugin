@@ -56,6 +56,11 @@ class sfImageTransformManager
    */
   public function generate($uri, $format)
   {
+    if (!array_key_exists($format, $this->options['formats']))
+    {
+      throw new sfImageTransformExtraPluginConfigurationException('Unknown format "'.$format.'" in your thumbnailing.yml!');
+    }
+
     $sourceImage = new sfImage($uri);
     $settings    = $this->options['formats'][$format];
 

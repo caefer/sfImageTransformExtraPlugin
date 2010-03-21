@@ -82,7 +82,7 @@ class sfImageSourceMock implements sfImageSourceInterface
    */
   public function stream_open($path , $mode , $options , &$opened_path)
   {
-    $this->resource = fopen(dirname(__FILE__).$this->filename, $mode);
+    $this->resource = fopen($this->translatePathToFilename($path), $mode);
     return false !== $this->resource;
   }
 
@@ -116,7 +116,7 @@ class sfImageSourceMock implements sfImageSourceInterface
    */
   public function url_stat($path , $flags)
   {
-    return stat(dirname(__FILE__).$this->filename);
+    return stat($this->translatePathToFilename($path));
   }
 
   /**
@@ -129,5 +129,16 @@ class sfImageSourceMock implements sfImageSourceInterface
   public static function buildURIfromParameters(array $parameters)
   {
     return 'sfImageSource://mock';
+  }
+
+  /**
+   * Translates the given stream URL to the abolute path of the source image
+   *
+   * @param  string $path The given stream URL
+   * @return string
+   */
+  private function translatePathToFilename($path)
+  {
+    return dirname(__FILE__).$this->filename;
   }
 }

@@ -93,4 +93,12 @@ interface sfImageSourceInterface
    * @throws InvalidArgumentException
    */
   public static function buildURIfromParameters(array $parameters);
+
+  /**
+   * Translates the given stream URL to the abolute path of the source image
+   *
+   * @param  string $path The given stream URL
+   * @return string
+   */
+  //private function translatePathToFilename($path);
 }

@@ -12,13 +12,13 @@
  */
 
 /**
- * Maps sfImageSource:// URLs to files indicated by Doctrine Models
+ * Maps sfImageSource:// URLs to files indicated by Propel Models
  *
  * @package    sfImageTransformExtraPlugin
  * @subpackage source
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class sfImageSourceDoctrine implements sfImageSourceInterface
+class sfImageSourcePropel implements sfImageSourceInterface
 {
   /**
    * resource context
@@ -123,7 +123,7 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
   }
 
   /**
-   * Returns an sfImageSource:// URL pointing to a file which path is stored on a Doctrine object
+   * Returns an sfImageSource:// URL pointing to a file which path is stored on a Propel object
    *
    * @param  array  $parameters Current request parameters (expected: type, attribute, id)
    * @return string sfImageSource:// URI
@@ -134,7 +134,7 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
     // all params must be given
     if ($diff = array_diff(array('type', 'attribute', 'id'), array_keys($parameters)))
     {
-      throw new InvalidArgumentException(sprintf('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (%s).', implode(', ', $diff)));
+      throw new InvalidArgumentException(sprintf('The sf_image for image_source "Propel" route has some missing mandatory parameters (%s).', implode(', ', $diff)));
     }
 
     return sprintf('sfImageSource://%s/%s#%s', $parameters['type'], $parameters['attribute'], $parameters['id']);
@@ -154,12 +154,12 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
     }
 
     $url = parse_url($path);
-    if(!($table = Doctrine::getTable($url['host'])))
+    if(!class_exists($url['host'].'Peer'))
     {
-      throw new sfError404Exception('Could not find Doctrine table "'.$url['host'].'"');
+      throw new sfError404Exception('Could not find Propel Peer class for "'.$url['host'].'"');
     }
     
-    if(!($obj = $table->find($url['fragment'])))
+    if(!($obj = call_user_func(array($url['host'], 'retrieveByPk'), $url['fragment'])))
     {
       throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
     }
