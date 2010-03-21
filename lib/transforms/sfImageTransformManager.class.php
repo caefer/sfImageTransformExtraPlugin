@@ -134,6 +134,11 @@ class sfImageTransformManager
     {
       $parameters = call_user_func(array($class_generic, 'prepareParameters'), $sourceImage, $parameters);
     }
+    else if(method_exists($this, 'prepareParametersFor'.ucfirst($method)))
+    {
+      $prepare = 'prepareParametersFor'.ucfirst($method);
+      $parameters = $this->$prepare($sourceImage, $parameters);
+    }
 
     return $parameters;
   }
@@ -159,5 +164,61 @@ class sfImageTransformManager
     }
 
     return $adapter;
+  }
+
+  /**
+   * Callback function to extend/alter parameters as given in your thumbnailing.yml.
+   *
+   * This callback adds the resources path to an overlay image
+   *
+   * @param  sfImage $sourceImage The original image
+   * @param  array   $parameters  Configured parameters for this transformation
+   * @return array   $parameters  Extended/altered parameters
+   */
+  private function prepareParametersForOverlay($sourceImage, $parameters)
+  {
+    if (!array_key_exists('overlay', $parameters))
+    {
+      return $parameters;
+    }
+
+    $filename = $parameters['overlay'];
+
+    if('/' == $filename[0])
+    {
+      if(!file_exists($filename))
+      {
+        throw new InvalidArgumentException('Could not find resource "'.$parameters['overlay'].'"!');
+      }
+    }
+    else
+    {
+      $filepath = '';
+      if(0 <= ($pos = strrpos($filename, '/')))
+      {
+        $filepath = substr($filename, 0, $pos);
+        $filename = substr($filename, $pos+1);
+      }
+
+      $files = sfFinder::type('file')
+        ->name($filename)
+        ->maxdepth(1)
+        ->in(array(
+          sfConfig::get('sf_data_dir') . '/resources/'.$filepath,
+          sfConfig::get('sf_plugins_dir') . '/sfImageTransformExtraPlugin/data/example-resources/'.$filepath,
+        ));
+
+      if(0 == count($files))
+      {
+        throw new InvalidArgumentException('Could not find resource "'.$parameters['overlay'].'"!');
+      }
+
+      $filename = $files[0];
+    }
+
+
+    $parameters['overlay'] = new sfImage($filename);
+
+    return $parameters;
   }
 }

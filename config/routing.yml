@@ -1,7 +1,7 @@
 sf_image_doctrine:
   class: sfImageTransformRoute
   url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
-  param: { module: sfImageTransformator, action: index }
+  param: { module: sfImageTransformator, action: index, attribute: file }
   requirements:
     format:    '[\w_-]+(?:,[\w_-]+(?:,[\w_-]+)?)?'
     path:      '[\w/]+'

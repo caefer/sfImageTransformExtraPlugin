@@ -146,7 +146,8 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
       throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
     }
     $attribute = ltrim($url['path'], '/');
-    return sfConfig::get('sf_upload_dir').'/'.strtolower($url['host']).'/'.$obj->retrieveFilenameForAttribute($attribute);
+    $files = sfFinder::type('file')->name($obj->$attribute.'*')->in(sfConfig::get('sf_upload_dir'));
+    return $files[0];
   }
 
   /**

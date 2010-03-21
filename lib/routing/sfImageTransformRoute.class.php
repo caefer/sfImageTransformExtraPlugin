@@ -12,7 +12,7 @@
  */
 
 /**
- * sfImageTransformRoutee represents a route that is bound to a generated (transformed) image resource.
+ * sfImageTransformRoute represents a route that is bound to a generated (transformed) image resource.
  *
  * @package    sfImageTransformExtraPlugin
  * @subpackage routing
@@ -20,33 +20,6 @@
  */
 class sfImageTransformRoute extends sfRequestRoute
 {
-  protected function mergeArrays($arr1, $arr2)
-  {
-    if(array_key_exists('sf_subject', $arr2) && is_object($arr2['sf_subject']))
-    {
-      $obj = $arr2['sf_subject'];
-      $arr1['path'] = $obj->getPath();
-      $arr1['type'] = $obj->getType();
-      foreach ($this->variables as $key => $value)
-      {
-        if(isset($obj[$key]))
-        {
-          $arr1[$key] = $obj->get($key);
-        }
-      }
-
-      unset($arr2['sf_subject']);
-    }
-
-    if(array_key_exists('format', $arr2))
-    {
-      $formats = sfConfig::get('thumbnailing_formats', array());
-      $arr1['sf_format'] = $this->get_suffix_for_mime_type($formats[$arr2['format']]['mime_type']);
-    }
-
-    return parent::mergeArrays($arr1, $arr2);
-  }
-
   /**
    * Generates a URL from the given parameters.
    *
@@ -58,8 +31,78 @@ class sfImageTransformRoute extends sfRequestRoute
    */
   public function generate($params, $context = array(), $absolute = false)
   {
-    $url = parent:: generate($params, $context = array(), $absolute = false);
-    return urldecode($url);
+    return urldecode(parent::generate($this->convertObjectToArray($params), $context, $absolute));
+  }
+
+  /**
+   * Reads parameters from a passed object and assignes values to type, path and sf_format parameters if necessary
+   *
+   * @param  array Parameters as passed to the current route
+   * @return array
+   */
+  protected function convertObjectToArray($object)
+  {
+    if (!$this->compiled)
+    {
+      $this->compile();
+    }
+
+    if (is_array($object))
+    {
+      if (!isset($object['sf_subject']))
+      {
+        return $object;
+      }
+
+      $parameters = $object;
+      $object = $parameters['sf_subject'];
+      unset($parameters['sf_subject']);
+    }
+    else
+    {
+      $parameters = array();
+    }
+
+    if(array_key_exists('type', $this->variables))
+    {
+      $parameters['type'] = get_class($object instanceof sfOutputEscaper ? $object->getRawValue() : $object);
+    }
+
+    $parameters = array_merge($parameters, $this->doConvertObjectToArray($object));
+
+    if(array_key_exists('path', $this->variables) && !array_key_exists('path', $parameters) && array_key_exists('id', $parameters))
+    {
+      $parameters['path'] = implode('/', array_reverse(str_split(str_pad($parameters['id'], 6, '0', STR_PAD_LEFT) , 2)));
+    }
+
+    if(!array_key_exists('sf_format', $parameters) && array_key_exists('format', $parameters))
+    {
+      $formats = sfConfig::get('thumbnailing_formats');
+      $parameters['sf_format'] = $this->get_suffix_for_mime_type($formats[$parameters['format']]['mime_type']);
+    }
+
+    return $parameters;
+  }
+
+  /**
+   * Attempts to read all variables for the current route from object attributes
+   *
+   * @param  object $object Object that was passed as sf_subject
+   * @return array
+   */
+  protected function doConvertObjectToArray($object)
+  {
+    $parameters = array();
+    foreach($this->variables as $variable => $token)
+    {
+      try
+      {
+        $parameter = $object->get($variable);
+        $parameters[$variable] = $parameter;
+      }
+      catch(Exception $e){/* do nothing */}
+    }
+    return $parameters;
   }
 
   /**
@@ -83,11 +126,21 @@ class sfImageTransformRoute extends sfRequestRoute
     }
   }
 
+  /**
+   * Returns the sfImageSource class name for the currently requested URL
+   *
+   * @return string
+   */
   public function getImageSourceStreamWrapper()
   {
     return 'sfImageSource'.$this->options['image_source'];
   }
 
+  /**
+   * Returns the sfImageSource:// URI for the currently requested URL
+   *
+   * @return string
+   */
   public function getImageSourceURI()
   {
     return call_user_func(array($this->getImageSourceStreamWrapper(), 'buildURIfromParameters'), $this->parameters);
