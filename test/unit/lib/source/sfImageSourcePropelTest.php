@@ -36,8 +36,8 @@ class sfImageSourcePropelTest extends PHPUnit_Framework_TestCase
 
   public function testStream_close()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertTrue(is_resource($fh));
     //fclose($fh);
     //$this->assertFalse(is_resource($fh));
@@ -45,8 +45,8 @@ class sfImageSourcePropelTest extends PHPUnit_Framework_TestCase
 
   public function testStream_eof()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertFalse(feof($fh));
     //while(!feof($fh))
     //{
@@ -58,59 +58,59 @@ class sfImageSourcePropelTest extends PHPUnit_Framework_TestCase
 
   public function testStream_flush()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertTrue(fflush($fh));
     //fclose($fh);
   }
 
   public function testStream_open()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertTrue(is_resource($fh));
     //fclose($fh);
   }
 
   public function testStream_read()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertEquals(10, strlen(fread($fh, 10)));
     //fclose($fh);
   }
 
   public function testStream_stat()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$fh = fopen($this->testSourceUri, 'r');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$fh = fopen($this->testSourceUri, ..');;
     //$this->assertTrue(is_array(fstat($fh)));
     //fclose($fh);
   }
 
   public function testUrl_stat()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
+    $this->markTestSkipped('No Propel fixture written yet..');
     //$this->assertTrue(is_array(stat($this->testSourceUri)));
   }
 
   public function testBuildURIfromParameters()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
+    $this->markTestSkipped('No Propel fixture written yet..');
     //$this->assertEquals('sfImageSource://TestRecord/file#1', sfImageSourcePropel::buildURIfromParameters($this->testParameters));
   }
 
   protected function setUp()
   {
-    $this->markTestSkipped('No Propel fixture written yet..')
-    //$this->dbh = new Propel_Adapter_Mock('mysql');
+    $this->markTestSkipped('No Propel fixture written yet..');
+    //$this->dbh = new Propel_Adapter_Mock('mys..');;
     //$this->conn = Propel_Manager::getInstance()->openConnection($this->dbh, 'mysql', true);
 
     //if(in_array('sfImageSource', stream_get_wrappers()))
     //{
-    //  stream_wrapper_unregister('sfImageSource');
+    //  stream_wrapper_unregister('sfImageSour..');;
     //}
-    //stream_wrapper_register('sfImageSource', 'sfImageSourcePropel') or die('Failed to register protocol..');
+    //stream_wrapper_register('sfImageSource', 'sfImageSourceProp..'); or die('Failed to register protocol..');;
 
     //$this->testSourceUri = sfImageSourcePropel::buildURIfromParameters($this->testParameters);
   }
