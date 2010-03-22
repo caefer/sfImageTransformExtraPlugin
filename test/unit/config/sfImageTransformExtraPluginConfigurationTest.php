@@ -28,13 +28,11 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
   public function testInitialize()
   {
     $dispatcher = $this->projectConfiguration->getEventDispatcher();
-    $load_factories = count($dispatcher->getListeners('context.load_factories'));
     $change_action = count($dispatcher->getListeners('controller.change_action'));
     $changed_source = count($dispatcher->getListeners('sf_image_transform.changed_source'));
 
     $this->pluginConfiguration->initialize();
 
-    $this->assertEquals($load_factories + 1, count($dispatcher->getListeners('context.load_factories')));
     $this->assertEquals($change_action + 1, count($dispatcher->getListeners('controller.change_action')));
     $this->assertEquals($changed_source + 1, count($dispatcher->getListeners('sf_image_transform.changed_source')));
   }
@@ -55,14 +53,6 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
   public function testGetCache()
   {
     $this->assertType('sfRawFileCache', sfImageTransformExtraPluginConfiguration::getCache());
-  }
-
-  public function testRegisterStreamWrapper()
-  {
-    stream_wrapper_unregister('sfImageSource');
-    $event = new sfEvent($this, 'context.load_factories', array());
-    sfImageTransformExtraPluginConfiguration::registerStreamWrapper($event);
-    $this->assertTrue(in_array('sfImageSource', stream_get_wrappers()));
   }
 
   public function testRemoveOldThumbnails()
