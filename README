@@ -69,6 +69,10 @@ Here are just a few examples that were all transformed from the above image.
 ![pattern](http://stat.ical.ly/thumbnails/pattern.png "Alpha Mask (Pattern) Transformation")
 ![just](http://stat.ical.ly/thumbnails/just.gif "Create & Text Transformation")  
 
+And of course:
+
+![scale](http://stat.ical.ly/thumbnails/scale.jpg "Thumbnail Scale Transformation")
+
 ## A walk through the configuration of a more complex format
 
 **Of course you can chain transformations!**
