@@ -54,14 +54,7 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
   public function testGenerate()
   {
     $manager = new sfImageTransformManager($this->dummy_formats);
-    $this->assertType('sfImage', $manager->generate(
-      array(
-        'format' => 'original',
-        'type' => 'TestFile',
-        'attribute' => 'file',
-        'id' => '1'
-      )
-    ));
+    $this->assertType('sfImage', $manager->generate('sfImageSource://TestFile/file#1', 'original'));
   }
 
   protected function setUp()
@@ -71,5 +64,11 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
       $configuration = new ProjectConfiguration(dirname(__FILE__).'/../../fixtures/project');
       sfContext::createInstance($configuration->getApplicationConfiguration('frontend', 'test', true));
     }
+
+    if(in_array('sfImageSource', stream_get_wrappers()))
+    {
+      stream_wrapper_unregister('sfImageSource');
+    }
+    stream_wrapper_register('sfImageSource', 'sfImageSourceMock') or die('Failed to register protocol..');
   }
 }
