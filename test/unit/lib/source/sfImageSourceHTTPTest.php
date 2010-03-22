@@ -25,9 +25,16 @@ require_once 'PHPUnit/Framework.php';
  */
 class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
 {
+  private $testSourceUri = null;
+  private $testParameters = array(
+    'protocol' => 'http',
+    'domain' => 'localhost',
+    'filepath' => 'test/image.gif'
+  );
+
   public function testStream_close()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(is_resource($fh));
     fclose($fh);
     $this->assertFalse(is_resource($fh));
@@ -35,7 +42,7 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
 
   public function testStream_eof()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertFalse(feof($fh));
     while(!feof($fh))
     {
@@ -47,41 +54,40 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
 
   public function testStream_flush()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(fflush($fh));
     fclose($fh);
   }
 
   public function testStream_open()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_RESOURCE, $fh);
     fclose($fh);
   }
 
   public function testStream_read()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertEquals(10, strlen(fread($fh, 10)));
     fclose($fh);
   }
 
   public function testStream_stat()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, fstat($fh));
     fclose($fh);
   }
 
   public function testUrl_stat()
   {
-    $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, stat('sfImageSource://TestFile/file#1'));
+    $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, stat($this->testSourceUri));
   }
 
-  public function testbuildURIfromParameters()
+  public function testBuildURIfromParameters()
   {
-    $parameters = array('type' => 'TestFile', 'id' => 1, 'attribute' => 'file');
-    $this->assertEquals('http://localhost/TestFile/file/1', sfImageSourceHTTP::buildURIfromParameters($parameters));
+    $this->assertEquals('sfImageSource://http/localhost#test/image.gif', sfImageSourceHTTP::buildURIfromParameters($this->testParameters));
   }
 
   protected function setUp()
@@ -92,5 +98,7 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
     }
     sfConfig::set('thumbnailing_source_image_stream_param', array('url_schema' => 'http://localhost/%type/%attribute/%id'));
     stream_wrapper_register('sfImageSource', 'sfImageSourceHTTP') or die('Failed to register protocol..');
+
+    $this->testSourceUri = sfImageSourceHTTP::buildURIfromParameters($this->testParameters);
   }
 }

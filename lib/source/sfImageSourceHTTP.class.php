@@ -132,7 +132,7 @@ class sfImageSourceHTTP implements sfImageSourceInterface
     // all params must be given
     if ($diff = array_diff(array('protocol', 'domain', 'filepath'), array_keys($parameters)))
     {
-      throw new InvalidArgumentException('The sf_image for image_source "HTTP" route has some missing mandatory parameters (url).');
+      throw new InvalidArgumentException(sprintf('The sf_image for image_source "HTTP" route has some missing mandatory parameters (%s).', implode(', ', $diff)));
     }
 
     return sprintf('sfImageSource://%s/%s#%s', $parameters['protocol'], $parameters['domain'], $parameters['filepath']);
