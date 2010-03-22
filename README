@@ -69,6 +69,101 @@ Here are just a few examples that were all transformed from the above image.
 ![pattern](http://stat.ical.ly/thumbnails/pattern.png "Alpha Mask (Pattern) Transformation")
 ![just](http://stat.ical.ly/thumbnails/just.gif "Create & Text Transformation")  
 
+## A walk through the configuration of a more complex format
+
+**Of course you can chain transformations!**
+
+In fact most of the above thumbnails have two transformations applied one for resizing and another for the effect.
+
+Let's see how it works and start with the original again. The format looks like this.
+
+          star0:
+            quality:                25  
+            mime_type:              image/png
+            transformations:        ~
+
+With the following result.
+
+![star0](http://stat.ical.ly/thumbnails/star0.png "No Transformation")
+
+Now let's add a ``crop`` transformation to get to the correct dimensions.
+
+          star1:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+
+![star1](http://stat.ical.ly/thumbnails/star1.png "Just cropped")
+
+And just to be a bit different we want to rotate.
+
+          star2:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+              - { adapter: GD, transformation: rotate, param: { angle: 20, background: '#FFFFFF' }}
+
+![star2](http://stat.ical.ly/thumbnails/star2.png "Now it's rotated as well")
+
+The blank spots are not what we want so let's crop it again.
+
+          star3:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+              - { adapter: GD, transformation: rotate, param: { angle: 20, background: '#FFFFFF' }}
+              - { adapter: GD, transformation: crop, param: { left: 17, top: 17, width: 120, height: 120 }}
+
+![star3](http://stat.ical.ly/thumbnails/star3.png "Cropped again")
+
+So we are back to the dimensions we wanted. Now we want a watermark on top of it.
+
+          star4:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+              - { adapter: GD, transformation: rotate, param: { angle: 20, background: '#FFFFFF' }}
+              - { adapter: GD, transformation: crop, param: { left: 17, top: 17, width: 120, height: 120 }}
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/logo.png, position: center }}
+
+![star4](http://stat.ical.ly/thumbnails/star4.png "Watermarked")
+
+Of course this is not "Web 2.0" enough yet..
+
+          star5:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+              - { adapter: GD, transformation: rotate, param: { angle: 20, background: '#FFFFFF' }}
+              - { adapter: GD, transformation: crop, param: { left: 17, top: 17, width: 120, height: 120 }}
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/logo.png, position: center }}
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/star_frame.png, position: center }}
+
+![star5](http://stat.ical.ly/thumbnails/star5.png "Star frame added")
+
+Now we want to get rid of the bits that stick out by applying an alpha mask.
+
+          star6:
+            quality:                25  
+            mime_type:              image/png
+            transformations:
+              - { adapter: GD, transformation: crop, param: { left: 90, top: 72, width: 120, height: 120 }}
+              - { adapter: GD, transformation: rotate, param: { angle: 20, background: '#FFFFFF' }}
+              - { adapter: GD, transformation: crop, param: { left: 17, top: 17, width: 120, height: 120 }}
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/logo.png, position: center }}
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/star_frame.png, position: center }}
+              - { adapter: GD, transformation: alphaMask, param: { mask: masks/star_mask.gif }}
+
+![star6](http://stat.ical.ly/thumbnails/star6.png "Stamped out")
+
+Done! ;)
+
+
 ## How does it work?
 
 The generation process that we designed so far works like this:
@@ -119,9 +214,9 @@ Alternatively, if you don't have PEAR installed, you can download the latest pac
 Activate the plugin in your ``ProjectConfiguration.class.php``.
 
     // /config/ProjectConfiguration.class.php
-	...
-	$this->enablePlugins(..., 'sfImageTransformPlugin', 'sfImageTransformExtraPlugin');
-	...
+  ...
+  $this->enablePlugins(..., 'sfImageTransformPlugin', 'sfImageTransformExtraPlugin');
+  ...
 
 Enable the generating module in your ``settings.yml``.
 
@@ -129,7 +224,7 @@ Enable the generating module in your ``settings.yml``.
     all:
       .settings:
         enabled_modules:        [ ..., sfImageTransformator ]
-	...
+  ...
 
 You also need to configure automatic mime detection for sfImageTransformPlugin in your applications ``app.yml``.
 
@@ -138,9 +233,9 @@ You also need to configure automatic mime detection for sfImageTransformPlugin i
       sfImageTransformPlugin:
         mime_type:
           auto_detect:  true
-          library: 		gd_mime_type #  gd_mime_type (GD), Fileinfo (PECL), MIME_Type (PEAR)
-        font_dir: 		%SF_PLUGINS_DIR%/sfImageTransformExtraPlugin/data/example-resources/fonts
-	...
+          library:    gd_mime_type #  gd_mime_type (GD), Fileinfo (PECL), MIME_Type (PEAR)
+        font_dir:     %SF_PLUGINS_DIR%/sfImageTransformExtraPlugin/data/example-resources/fonts
+  ...
 
 Automatic mime detection is absolutely necessary!
 Of course you can point the ``font_fir`` to your own location containing True Type Fonts.
@@ -149,7 +244,7 @@ Clear the cache to enable the autoloading to find the new classes:
 
     $ php symfony cc
 
-> Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well.
+> Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well so please follow the [README](http://www.symfony-project.org/plugins/sfImageTransformPlugin/1_3_1?tab=plugin_readme "sfImageTransformPlugin README").
 
 Next you have to configure your routes.
 
@@ -160,7 +255,7 @@ Your image sources lie in a directory accessible to your web server and you want
 Create a route like the following in your applications ``routing.yml``.
 
     // /apps/yourapplication/config/routing.yml
-	sf_image:
+  sf_image:
       class: sfImageTransformRoute
       url:   /thumbnails/:format/:filepath.:sf_format
       param: { module: sfImageTransformator, action: index }
@@ -171,14 +266,14 @@ Create a route like the following in your applications ``routing.yml``.
         sf_method: [ get ]
       options:
         image_source: File
-	...
+  ...
 
 You can now generate ``<img />`` tags to these images like this.
 
     <?php
     echo image_tag(url_for('sf_image_file', array('format' => 'pixelate', 'filepath' => 'logo.png')));
-	// resulting in: http://localhost/thumbnails/pixelate/logo.png.jpg
-	?>
+  // resulting in: http://localhost/thumbnails/pixelate/logo.png.jpg
+  ?>
 
 > Please note that the filepath is expected relative to ``sf_upload_dir``!
 
@@ -203,14 +298,14 @@ Create a route like the following in your applications ``routing.yml``.
       options:
         image_source: Doctrine
         segment_separators: [ '/', '.', '-' ]
- 	...
+  ...
 
 You can now generate ``<img />`` tags to these images like this.
 
     <?php
     echo image_tag(url_for('sf_image_doctrine', array('format' => 'pixelate', 'sf_subject' => $record)));
-	// resulting in: http://localhost/thumbnails/News/pixelate/01/00/00/mytest-1.jpg
-	?>
+  // resulting in: http://localhost/thumbnails/News/pixelate/01/00/00/mytest-1.jpg
+  ?>
 
 ``$record`` in this example is either a Doctrine or Propel record.
 
@@ -234,19 +329,14 @@ Create a route like the following in your applications ``routing.yml``.
         sf_method: [ get ]
       options:
         image_source: HTTP
- 	...
+  ...
 
 You can now generate ``<img />`` tags to these images like this.
 
     <?php
     echo image_tag(url_for('sf_image_http', array('format' => 'pixelate', 'filepath' => 'images/symfony-reloaded.png')));
-	// resulting in: http://localhost/thumbnails/sfweb/pixelate/images/symfony-reloaded.png.jpg
-	?>
-
-
-If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
-
-    <?php echo image_tag('http://your.webservice.url'.url_for(...), array());
+  // resulting in: http://localhost/thumbnails/sfweb/pixelate/images/symfony-reloaded.png.jpg
+  ?>
 
 ### Invalidating generated images
 
@@ -258,14 +348,6 @@ see also twiggering invalidation when using sfImageTransformExtraPlugin as a web
 ## Advanced usage:
 
 ### How can I use static resources like fonts, alpha masks and overlay images?
-
-### How can I change the default URL schema (route) ?
-
-In your application you can create a new route ``sf_image_transformator`` in your ``routing.yml``. You can copy it from the plugin or from the following example.
-
-   sf_image_transformator:
-     url:   /thumbnails/:type/:format/:path/:slug-:id,:attribute.:sf_format
-	 param: { module: sfImageTransformator, action: index }
 
 ### How can I run sfImageTransformExtraPlugin as a web service?
 
@@ -283,6 +365,11 @@ As the invalidation of the generated images can not be triggered with an event y
 
 EXAMPLE
 
+
+If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
+
+    <?php echo image_tag('http://your.webservice.url'.url_for(...), array());
+
 ### How can I use a custom image source?
 
 write a new stream wrapper
@@ -294,15 +381,11 @@ prepareParameters()
 ### How can I run the tests?
 
     $ cd /path/to/sfImageTransformExtraPlugin
-	$ phpunit --tap test/sfImageTransformExtraPluginsTests.php
+  $ phpunit --tap test/sfImageTransformExtraPluginsTests.php
 
 ### How can I generate the API documentation?
 
     $ cd /path/to/sfImageTransformExtraPlugin
     $ phpdoc ...
 
-  1 <?php echo image_tag(url_for('sf_image_mock', array('format' => 'border'))); ?>
-  2 <?php echo image_tag(url_for('sf_image_file', array('format' => 'border', 'filepath' => 'logo.png'))); ?>
-  3 <?php echo image_tag(url_for('sf_image_doctrine', array('format' => 'border', 'sf_subject' => $news))); ?>
-  4 <?php echo image_tag(url_for('sf_image_http', array('format' => 'border', 'protocol' => 'http', 'domain' => 'www.symfony-project.org', 'filepath' => '/image    s/symfony-reloaded.png'))); ?>
-~### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?
+### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?
