@@ -78,9 +78,10 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
     $this->assertType(PHPUnit_Framework_Constraint_IsType::TYPE_ARRAY, stat('sfImageSource://TestFile/file#1'));
   }
 
-  public function testGetUrl()
+  public function testbuildURIfromParameters()
   {
-    $this->assertEquals('http://localhost/TestFile/file/1', sfImageSourceHTTP::getUrl('sfImageSource://TestFile/file#1'));
+    $parameters = array('type' => 'TestFile', 'id' => 1, 'attribute' => 'file');
+    $this->assertEquals('http://localhost/TestFile/file/1', sfImageSourceHTTP::buildURIfromParameters($parameters));
   }
 
   protected function setUp()
