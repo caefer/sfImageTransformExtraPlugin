@@ -27,9 +27,16 @@ require_once 'PHPUnit/Framework.php';
  */
 class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
 {
+  private $testSourceUri = null;
+  private $testParameters = array(
+    'type' => 'TestRecord',
+    'attribute' => 'file',
+    'id' => '1'
+  );
+
   public function testStream_close()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(is_resource($fh));
     fclose($fh);
     $this->assertFalse(is_resource($fh));
@@ -37,7 +44,7 @@ class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
 
   public function testStream_eof()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertFalse(feof($fh));
     while(!feof($fh))
     {
@@ -49,35 +56,40 @@ class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
 
   public function testStream_flush()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(fflush($fh));
     fclose($fh);
   }
 
   public function testStream_open()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(is_resource($fh));
     fclose($fh);
   }
 
   public function testStream_read()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertEquals(10, strlen(fread($fh, 10)));
     fclose($fh);
   }
 
   public function testStream_stat()
   {
-    $fh = fopen('sfImageSource://TestRecord/file#1', 'r');
+    $fh = fopen($this->testSourceUri, 'r');
     $this->assertTrue(is_array(fstat($fh)));
     fclose($fh);
   }
 
   public function testUrl_stat()
   {
-    $this->assertTrue(is_array(stat('sfImageSource://TestRecord/file#1')));
+    $this->assertTrue(is_array(stat($this->testSourceUri)));
+  }
+
+  public function testBuildURIfromParameters()
+  {
+    $this->assertEquals('sfImageSource://TestRecord/file#1', sfImageSourceDoctrine::buildURIfromParameters($this->testParameters));
   }
 
   protected function setUp()
@@ -90,5 +102,7 @@ class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
       stream_wrapper_unregister('sfImageSource');
     }
     stream_wrapper_register('sfImageSource', 'sfImageSourceDoctrine') or die('Failed to register protocol..');
+
+    $this->testSourceUri = sfImageSourceDoctrine::buildURIfromParameters($this->testParameters);
   }
 }

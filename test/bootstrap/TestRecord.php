@@ -25,9 +25,9 @@ class TestRecord extends Doctrine_Record
     return 'test-me';
   }
 
-  public function retrieveFilenameForAttribute($attribute)
+  public function getFile()
   {
-    return 'daphne.jpg';
+    return '/testrecord/daphne.jpg';
   }
 }
 
