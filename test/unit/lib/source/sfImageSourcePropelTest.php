@@ -13,8 +13,6 @@
 
 /** central bootstrap for unit tests */
 require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
-/** Propel test record for mocking */
-require_once dirname(__FILE__).'/../../../bootstrap/TestRecord.php';
 /** PHPUnit Framework */
 require_once 'PHPUnit/Framework.php';
 

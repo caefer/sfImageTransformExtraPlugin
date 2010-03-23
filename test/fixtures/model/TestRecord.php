@@ -25,6 +25,11 @@ class TestRecord extends Doctrine_Record
     return 'test-me';
   }
 
+  public function getId()
+  {
+    return 1;
+  }
+
   public function getFile()
   {
     return '/testrecord/daphne.jpg';
