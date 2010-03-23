@@ -26,11 +26,6 @@ class sfImageTransformManager
   private $options = array();
 
   /**
-   * @var string $adapter Holds the adapter for the current transformation
-   */
-  private $adapter = 'GD';
-
-  /**
    *
    */
   public function __construct($formats = array())
@@ -91,51 +86,9 @@ class sfImageTransformManager
    */
   private function transform(sfImage $sourceImage, $transformation)
   {
-    $this->setAdapter($sourceImage, $transformation['adapter']);
-
     $parameters = $this->prepareParameters($sourceImage, $transformation['transformation'], $transformation['param']);
 
     call_user_func_array(array($sourceImage, $transformation['transformation']), $parameters);
-  }
-
-  /**
-   * Sets new adapter on the image if necessary
-   *
-   * @param  sfImage $sourceImage The image to transform
-   * @param  array   $adapter     The adapter of the current transformation
-   * @return void
-   */
-  private function setAdapter(sfImage $sourceImage, $adapter)
-  {
-    if($adapter != $this->adapter)
-    {
-      $newAdapter = $this->createAdapter($adapter);
-      $this->adapter = $adapter;
-      $sourceImage->setAdapter($newAdapter);
-    }
-  }
-
-  /**
-   * Returns a adapter class of the specified type
-   * @access protected
-   * @param  string                          $name Name of the transformation to instantiate
-   * @return sfImageTransformAdapterAbstract
-   */
-  private function createAdapter($name)
-  {
-    $adapter_class = 'sfImageTransform' . $name . 'Adapter';
-
-    if (class_exists($adapter_class))
-    {
-      $adapter = new $adapter_class();
-    }
-    // Cannot find the adapter class so throw an exception
-    else
-    {
-      throw new sfImageTransformException(sprintf('Unsupported adapter: %s', $adapter_class));
-    }
-
-    return $adapter;
   }
 
   /**

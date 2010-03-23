@@ -32,13 +32,6 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
         'transformations' => array(
           0 => array(
             'adapter' => 'GD',
-            'transformation' => 'alphaMask',
-            'param' => array(
-              'mask' => 'masks/pattern.gif',
-            )
-          ),
-          1 => array(
-            'adapter' => 'GD',
             'transformation' => 'overlay',
             'param' => array(
               'overlay' => 'overlays/logo.png',
@@ -55,9 +48,9 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
         'transformations' => array(
           0 => array(
             'adapter' => 'GD',
-            'transformation' => 'alphaMask',
+            'transformation' => 'overlay',
             'param' => array(
-              'mask' => 'masks/doesnotexist.gif',
+              'overlay' => 'overlays/doesnotexist.png',
             )
           ),
         ),
