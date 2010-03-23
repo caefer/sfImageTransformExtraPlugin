@@ -179,7 +179,7 @@ The generation process that we designed so far works like this:
 5. The thumbnail gets cached (saved to disk)
 6. The thumbnail is send out to the user
 
-![Thumbnail request lifecycle](http://yuml.me/732e8bad)
+![Thumbnail request lifecycle](http://yuml.me/54355ffc)
 
 The thumbnail image is generated on the first request. All succeeding requests are coming from cache (per default the filesystem) and are served by Apache without spawning a PHP process.
 
