@@ -40,7 +40,7 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
       case 'image/gif':
       case 'image/jpg':
       default:
-        $this->transformDefault($resource);
+        //$this->transformDefault($resource); not yet implemented
     }
     
     return $image;
