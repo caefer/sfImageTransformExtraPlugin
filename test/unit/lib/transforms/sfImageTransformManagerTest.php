@@ -29,7 +29,31 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
       'original' => array(
         'quality' => 100,
         'mime_type' => 'image/png',
-        'transformations' => array(),
+        'transformations' => array(
+          0 => array(
+            'adapter' => 'GD',
+            'transformation' => 'alphaMask',
+            'param' => array(
+              'mask' => 'masks/pattern.gif',
+            )
+          ),
+        ),
+      )
+    );
+
+  private $dummy_failing_formats = array(
+      'original' => array(
+        'quality' => 100,
+        'mime_type' => 'image/png',
+        'transformations' => array(
+          0 => array(
+            'adapter' => 'GD',
+            'transformation' => 'alphaMask',
+            'param' => array(
+              'mask' => 'masks/doesnotexist.gif',
+            )
+          ),
+        ),
       )
     );
 
@@ -51,10 +75,28 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
     $this->assertType('sfImageTransformManager', $manager);
   }
 
+  /**
+   * @expectedException sfImageTransformExtraPluginConfigurationException
+   */
+  public function testGenerateWrongFormat()
+  {
+    $manager = new sfImageTransformManager($this->dummy_formats);
+    $this->assertType('sfImage', $manager->generate('sfImageSource://mock', 'doesnotexist'));
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   */
+  public function testGenerateIncompleteFormat()
+  {
+    $manager = new sfImageTransformManager($this->dummy_failing_formats);
+    $this->assertType('sfImage', $manager->generate('sfImageSource://mock', 'original'));
+  }
+
   public function testGenerate()
   {
     $manager = new sfImageTransformManager($this->dummy_formats);
-    $this->assertType('sfImage', $manager->generate('sfImageSource://TestFile/file#1', 'original'));
+    $this->assertType('sfImage', $manager->generate('sfImageSource://mock', 'original'));
   }
 
   protected function setUp()

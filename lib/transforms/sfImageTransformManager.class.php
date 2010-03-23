@@ -116,6 +116,29 @@ class sfImageTransformManager
   }
 
   /**
+   * Returns a adapter class of the specified type
+   * @access protected
+   * @param  string                          $name Name of the transformation to instantiate
+   * @return sfImageTransformAdapterAbstract
+   */
+  private function createAdapter($name)
+  {
+    $adapter_class = 'sfImageTransform' . $name . 'Adapter';
+
+    if (class_exists($adapter_class))
+    {
+      $adapter = new $adapter_class();
+    }
+    // Cannot find the adapter class so throw an exception
+    else
+    {
+      throw new sfImageTransformException(sprintf('Unsupported adapter: %s', $adapter_class));
+    }
+
+    return $adapter;
+  }
+
+  /**
    * Extends current transformation parameters by a callback
    *
    * This is needed for transformations that need certain objects in their parameters,
@@ -146,29 +169,6 @@ class sfImageTransformManager
     }
 
     return $parameters;
-  }
-
-  /**
-   * Returns a adapter class of the specified type
-   * @access protected
-   * @param  string                          $name Name of the transformation to instantiate
-   * @return sfImageTransformAdapterAbstract
-   */
-  private function createAdapter($name)
-  {
-    $adapter_class = 'sfImageTransform' . $name . 'Adapter';
-
-    if (class_exists($adapter_class))
-    {
-      $adapter = new $adapter_class;
-    }
-    // Cannot find the adapter class so throw an exception
-    else
-    {
-      throw new sfImageTransformException(sprintf('Unsupported adapter: %s', $adapter_class));
-    }
-
-    return $adapter;
   }
 
   /**
@@ -205,12 +205,14 @@ class sfImageTransformManager
         $filename = substr($filename, $pos+1);
       }
 
+      $pluginDirs = ProjectConfiguration::getActive()->getAllPluginPaths();
+      $pluginDir = $pluginDirs['sfImageTransformExtraPlugin'];
       $files = sfFinder::type('file')
         ->name($filename)
         ->maxdepth(1)
         ->in(array(
           sfConfig::get('sf_data_dir') . '/resources/'.$filepath,
-          sfConfig::get('sf_plugins_dir') . '/sfImageTransformExtraPlugin/data/example-resources/'.$filepath,
+          $pluginDir . '/data/example-resources/'.$filepath,
         ));
 
       if(0 == count($files))
