@@ -36,6 +36,14 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(false, $this->cache->has('any_key'));
   }
 
+  public function testWrite()
+  {
+    $dispatcher = new sfEventDispatcher();
+    $response = new sfWebResponse($dispatcher);
+    // test set as write is protected
+    $this->assertEquals(true, $this->cache->set('any/key', serialize($response)));
+  }
+
   public function testRemovePattern()
   {
     $this->markTestIncomplete('This test has not been implemented yet.');
@@ -51,19 +59,22 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(0, $this->cache->getTimeout('any_key'));
   }
 
+  private function getCache($dir)
+  {
+    return new sfRawFileCache(array(
+      'automatic_cleaning_factor' => 0,
+      'cache_dir' => $dir,
+    ));
+  }
+
   protected function setUp()
   {
-    $this->cache = new sfRawFileCache(array(
-      'automatic_cleaning_factor' => 0,
-      'cache_dir' => '/dev/null',
-      'lifetime' => 10,
-      'prefix' => '/var/www/ical.ly/symfon/apps/frontend/template'
-    ));
+    $this->cache = $this->getCache(sfConfig::get('sf_cache_dir').'/sfImageTransformExtraPluginUnitTests');
   }
 
   protected function tearDown()
   {
-    unset($this->cache);
+    exec('rm -rf '.sfConfig::get('sf_cache_dir').'/sfImageTransformExtraPluginUnitTests');
   }
 }
 
