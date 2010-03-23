@@ -95,6 +95,7 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
    *
    * This callback adds the resources path to a mask image
    *
+   * @throws InvalidArgumentException
    * @param  sfImage $sourceImage The original image
    * @param  array   $parameters  Configured parameters for this transformation
    * @return array   $parameters  Extended/altered parameters
@@ -117,6 +118,11 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
     {
       $parameters['mask'] = new sfImage($plugin_resources_dir . '/' . $parameters['mask']);
     }
+    else
+    {
+      throw new InvalidArgumentException('Mask "'.$parameters['mask'].'" could not be found!');
+    }
+
     return $parameters;
   }
 }
