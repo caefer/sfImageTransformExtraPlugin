@@ -27,7 +27,7 @@ class sfImageSourceMockTest extends PHPUnit_Framework_TestCase
 {
   public function testStream_close()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertTrue(is_resource($fh));
     fclose($fh);
     $this->assertFalse(is_resource($fh));
@@ -35,7 +35,7 @@ class sfImageSourceMockTest extends PHPUnit_Framework_TestCase
 
   public function testStream_eof()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertFalse(feof($fh));
     while(!feof($fh))
     {
@@ -47,35 +47,40 @@ class sfImageSourceMockTest extends PHPUnit_Framework_TestCase
 
   public function testStream_flush()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertTrue(fflush($fh));
     fclose($fh);
   }
 
   public function testStream_open()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertTrue(is_resource($fh));
     fclose($fh);
   }
 
   public function testStream_read()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertEquals(10, strlen(fread($fh, 10)));
     fclose($fh);
   }
 
   public function testStream_stat()
   {
-    $fh = fopen('sfImageSource://TestFile/file#1', 'r');
+    $fh = fopen('sfImageSource://mock', 'r');
     $this->assertTrue(is_array(fstat($fh)));
     fclose($fh);
   }
 
   public function testUrl_stat()
   {
-    $this->assertTrue(is_array(stat('sfImageSource://TestFile/file#1')));
+    $this->assertTrue(is_array(stat('sfImageSource://mock')));
+  }
+
+  public function testBuildURIfromParameters()
+  {
+    $this->assertEquals('sfImageSource://mock', sfImageSourceMock::buildURIfromParameters(array()));
   }
 
   protected function setUp()

@@ -106,7 +106,7 @@ class sfImageRoundedCornersGD extends sfImageTransformAbstract
   
   private function getMask($w, $h) 
   {
-    // Create a mask png image of the area you want in the circle/ellipse (a ‘magicpink’ image with a black shape on it, with black set to the colour of alpha transparency) - $mask
+    // Create a mask png image of the area you want in the circle/ellipse (a 'magicpink' image with a black shape on it, with black set to the colour of alpha transparency) - $mask
     $mask = imagecreatetruecolor($w, $h);
     imagealphablending($mask, true);
     // Set the masking colours
@@ -139,34 +139,5 @@ class sfImageRoundedCornersGD extends sfImageTransformAbstract
     imagefilledellipse($im, $x + $rad, $cy - $rad, $rad * 2, $dia, $col);
     imagefilledellipse($im, $cx - $rad, $cy - $rad, $rad * 2, $dia, $col);
     imagefilledellipse($im, $cx - $rad, $y + $rad, $rad * 2, $dia, $col);
-  }
-
-  /**
-   * Callback function to extend/alter parameters as given in your thumbnailing.yml.
-   *
-   * This callback adds the resources path to an overlay image
-   *
-   * @param  sfImage $sourceImage The original image
-   * @param  array   $parameters  Configured parameters for this transformation
-   * @return array   $parameters  Extended/altered parameters
-   */
-  public static function prepareParameters($sourceImage, $parameters)
-  {
-    if (!array_key_exists('overlay', $parameters))
-    {
-      return $parameters;
-    }
-
-    $user_resources_dir   = sfConfig::get('sf_data_dir') . '/resources';
-    $plugin_resources_dir = sfConfig::get('sf_plugins_dir') . '/sfImageTransformExtraPlugin/data/example-resources';
-    if (file_exists($user_resources_dir . '/' . $parameters['overlay']))
-    {
-      $parameters['overlay'] = new sfImage($user_resources_dir . '/' . $parameters['overlay']);
-    }
-    else if (file_exists($plugin_resources_dir . '/' . $parameters['overlay']))
-    {
-      $parameters['overlay'] = new sfImage($plugin_resources_dir . '/' . $parameters['overlay']);
-    }
-    return $parameters;
   }
 }

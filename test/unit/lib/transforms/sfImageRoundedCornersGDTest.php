@@ -30,4 +30,12 @@ class sfImageRoundedCornersGDTest extends PHPUnit_Framework_TestCase
     $transformation = new sfImageRoundedCornersGD(null, false); 
     $this->assertType('sfImageRoundedCornersGD', $transformation);
   }
+
+  public function testTransform() 
+  {
+    $img1 = new sfImage(dirname(__FILE__).'/../../../../data/example-resources/overlays/logo.png');
+    $this->assertType('sfImage', $img1->roundedCorners(10));
+    $img2 = new sfImage(dirname(__FILE__).'/../../../../data/caefer.jpg');
+    $this->assertType('sfImage', $img2->roundedCorners(10), '#FF0000');
+  }
 }
