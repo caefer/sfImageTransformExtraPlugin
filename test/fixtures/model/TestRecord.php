@@ -47,6 +47,12 @@ class TestRecordTable extends Doctrine_Table
 {
   public function find($id)
   {
-    return new TestRecord();
+    switch ($id)
+    {
+      case 1:
+        return new TestRecord();
+      default:
+        return null;
+    }
   }
 }

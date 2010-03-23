@@ -61,6 +61,24 @@ class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
     fclose($fh);
   }
 
+  /**
+   * @expectedException sfError404Exception
+   */
+  public function testFailedStream_open()
+  {
+    $testSourceUri = sfImageSourceDoctrine::buildURIfromParameters(array('type' => 'DoesNotExist', 'attribute' => 'file', 'id' => 1));
+    $fh = fopen($testSourceUri, 'r');
+  }
+
+  /**
+   * @expectedException sfError404Exception
+   */
+  public function testNotFoundStream_open()
+  {
+    $testSourceUri = sfImageSourceDoctrine::buildURIfromParameters(array('type' => 'TestRecord', 'attribute' => 'file', 'id' => 2));
+    $fh = fopen($testSourceUri, 'r');
+  }
+
   public function testStream_open()
   {
     $fh = fopen($this->testSourceUri, 'r');
@@ -85,6 +103,14 @@ class sfImageSourceDoctrineTest extends PHPUnit_Framework_TestCase
   public function testUrl_stat()
   {
     $this->assertTrue(is_array(stat($this->testSourceUri)));
+  }
+
+  /**
+   * @expectedException InvalidArgumentException
+   */
+  public function testFailedBuildURIfromParameters()
+  {
+    $this->assertEquals('sfImageSource://TestRecord/file#1', sfImageSourceDoctrine::buildURIfromParameters(array()));
   }
 
   public function testBuildURIfromParameters()

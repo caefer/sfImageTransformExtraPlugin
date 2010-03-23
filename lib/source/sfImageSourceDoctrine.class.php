@@ -154,7 +154,11 @@ class sfImageSourceDoctrine implements sfImageSourceInterface
     }
 
     $url = parse_url($path);
-    if(!($table = Doctrine::getTable($url['host'])))
+    try
+    {
+      $table = Doctrine::getTable($url['host']);
+    }
+    catch(Doctrine_Exception $e)
     {
       throw new sfError404Exception('Could not find Doctrine table "'.$url['host'].'"');
     }
