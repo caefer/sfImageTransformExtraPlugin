@@ -47,7 +47,17 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
 
   public function testSetViewCache()
   {
-    $this->markTestSkipped('ViewCacheManagers can not be tested from command line');
+    if(false !== sfConfig::get('sf_cache'))
+    {
+      $event = new sfEvent($this, 'controller.change_action', array('module' => 'sfImageTransformator', 'action' => 'index'));
+      sfImageTransformExtraPluginConfiguration::setViewCache($event);
+      $viewCacheManager = sfContext::getInstance(sfConfig::get('sf_app'))->getViewCacheManager();
+      $this->assertType('sfRawFileCache', $viewCacheManager->getCache());
+    }
+    else
+    {
+      $this->markTestSkipped('sf_cache is false, therefor testing setting of a viewcache must be skipped.');
+    }
   }
 
   public function testGetCache()
@@ -57,9 +67,9 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
 
   public function testRemoveOldThumbnails()
   {
-    //$event = new sfEvent($this, 'sf_image_transform.changed_source', array());
-    //sfImageTransformExtraPluginConfiguration::registerStreamWrapper($event);
-    $this->markTestIncomplete('Removal not yet implemented');
+    $event = new sfEvent($this, 'sf_image_transform.changed_source', array('type'=>'TestRecord', 'id' => 1));
+    sfImageTransformExtraPluginConfiguration::removeOldThumbnails($event);
+    $this->assertTrue(true);
   }
 
   protected function setUp()
