@@ -41,6 +41,11 @@ class sfImageAlphaMaskGDTest extends PHPUnit_Framework_TestCase
   {
     $mask = new sfImage(dirname(__FILE__).'/../../../../data/example-resources/masks/pattern.gif');
     $this->assertType('sfImage', $this->img->alphaMask($mask));
+  }
+
+  public function testTransformWithColor() 
+  {
+    $mask = new sfImage(dirname(__FILE__).'/../../../../data/example-resources/masks/pattern.gif');
     $this->assertType('sfImage', $this->img->alphaMask($mask, '#0000FF'));
   }
 
