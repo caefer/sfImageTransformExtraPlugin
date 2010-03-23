@@ -37,6 +37,13 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
               'mask' => 'masks/pattern.gif',
             )
           ),
+          1 => array(
+            'adapter' => 'GD',
+            'transformation' => 'overlay',
+            'param' => array(
+              'overlay' => 'overlays/logo.png',
+            )
+          ),
         ),
       )
     );
