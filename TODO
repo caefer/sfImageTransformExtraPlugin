@@ -1,4 +1,5 @@
- * put cache class into factories.yml
+ * Create abstract base class for sources to reduce copy and paste code
+ * Make sfImageRoundedCornersGD use sfImageAlphaMaskGD to reduce copy and paste code
  * HTTP cache
  * remove sfImageTransformExtraPluginConfiguration::setCacheKey()
  * write more tests to produce image urls
