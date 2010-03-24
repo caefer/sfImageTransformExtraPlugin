@@ -84,10 +84,8 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
    */
   static public function getCache()
   {
-    return new sfRawFileCache(array(
-      'automatic_cleaning_factor' => 0,
-      'cache_dir' => sfConfig::get('sf_web_dir')
-    ));
+    extract(sfConfig::get('sf_thumbnail_cache'));
+    return new $class($param);
   }
 
   /**

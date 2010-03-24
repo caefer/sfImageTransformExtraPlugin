@@ -1,3 +1,9 @@
 all:
   .settings:
-    cache_namespace_callable: sfImageTransformExtraPluginConfiguration::setCacheKey
+    cache_namespace_callable:       sfImageTransformExtraPluginConfiguration::setCacheKey
+
+    thumbnail_cache:
+      class: sfRawFileCache
+      param:
+        automatic_cleaning_factor:  0
+        cache_dir:                  %SF_WEB_DIR%

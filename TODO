@@ -4,8 +4,5 @@
  * write more tests to produce image urls
  * remove or think over
    modules/sfImageTransformator/config/factories.yml -> check if readable so it can be set from plugin configuration class
-   data/example-resources/overlays/wlcp.png -> replace with plugin logo!
-   data/example-resources/fonts/accid___.ttf -> free font!
-   data/example-resources/masks/pattern.gif -> 
-   data/example-resources/masks/frame.gif -> transparent caefer over text
-   data/caefer.jpg -> caefer image
+   data/example-resources/masks/frame.gif
+   test/fixtures/project/web/uploads/daphne.jpg
