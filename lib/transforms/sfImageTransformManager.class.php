@@ -105,7 +105,7 @@ class sfImageTransformManager
   private function prepareParameters(sfImage $sourceImage, $method, $parameters)
   {
     $class_generic = 'sfImage'.ucfirst($method) . 'Generic';
-    $class_adapter = 'sfImage'.ucfirst($method) . $this->adapter;
+    $class_adapter = 'sfImage'.ucfirst($method) . 'GD';
 
     if(method_exists($class_adapter, 'prepareParameters'))
     {
