@@ -33,7 +33,8 @@ class sfImageAlphaMaskGDTest extends PHPUnit_Framework_TestCase
    */
   public function test__construct() 
   {
-    $transformation = new sfImageAlphaMaskGD(null, false); 
+    $mask = new sfImage(dirname(__FILE__).'/../../../../data/example-resources/masks/pattern.gif');
+    $transformation = new sfImageAlphaMaskGD($mask, false); 
     $this->assertType('sfImageAlphaMaskGD', $transformation);
   }
 
