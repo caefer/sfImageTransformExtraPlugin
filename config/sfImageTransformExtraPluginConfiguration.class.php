@@ -38,22 +38,6 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
   }
 
   /**
-   * Callback to set a custom cache key
-   *
-   * This sets the cache key to the same value as the current image url.
-   * set in settings.yml / cache_namespace_callable
-   *
-   * @static
-   * @param  sfEvent $event Event object as passed by symfony event system
-   *
-   * @return void
-   */
-  static public function setCacheKey($internalUri, $hostName = '', $vary = '', $contextualPrefix = '', $sfViewCacheManager)
-  {
-    return sfContext::getInstance()->getController()->genUrl($internalUri, false);
-  }
-
-  /**
    * Set a custom view cache class that just dumps the raw file with no expire time stuff
    *
    * @static
@@ -67,6 +51,8 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
 
     if(sfConfig::get('sf_cache') && 'sfImageTransformator' == $params['module'] && 'index' == $params['action'])
     {
+      sfConfig::set('sf_cache_namespace_callable', 'sfRawFileCache::setCacheKey');
+
       $viewCacheManager = sfContext::getInstance(sfConfig::get('sf_app'))->getViewCacheManager();
       $viewCacheManager->initialize(
         $viewCacheManager->getContext(),

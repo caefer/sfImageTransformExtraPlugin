@@ -157,4 +157,20 @@ class sfRawFileCache extends sfFileCache
   {
     return $this->getOption('cache_dir').DIRECTORY_SEPARATOR.str_replace(sfCache::SEPARATOR, DIRECTORY_SEPARATOR, $key);
   }
+
+  /**
+   * Callback to set a custom cache key
+   *
+   * This sets the cache key to the same value as the current image url.
+   * set in settings.yml / cache_namespace_callable
+   *
+   * @static
+   * @param  sfEvent $event Event object as passed by symfony event system
+   *
+   * @return void
+   */
+  static public function setCacheKey($internalUri, $hostName = '', $vary = '', $contextualPrefix = '', $sfViewCacheManager)
+  {
+    return sfContext::getInstance()->getController()->genUrl($internalUri, false);
+  }
 }

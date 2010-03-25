@@ -59,6 +59,14 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(0, $this->cache->getTimeout('any_key'));
   }
 
+  public function testSetCacheKey()
+  {
+    $internalUri = 'sfImageTransformator/index?type=TestFile&format=original&path=00/00/00&slug=barfoo&id=1&sf_format=jpg';
+    $viewCacheManager = new sfViewCacheManager(sfContext::getInstance(), new sfNoCache());
+    $path = sfRawFileCache::setCacheKey($internalUri, '', '', '', $viewCacheManager);
+    $this->assertContains('/thumbnails/TestFile/original/00/00/00/barfoo-1.jpg', $path);
+  }
+
   private function getCache($dir)
   {
     return new sfRawFileCache(array(

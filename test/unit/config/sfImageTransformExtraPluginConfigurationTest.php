@@ -37,14 +37,6 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
     $this->assertEquals($changed_source + 1, count($dispatcher->getListeners('sf_image_transform.changed_source')));
   }
 
-  public function testSetCacheKey()
-  {
-    $internalUri = 'sfImageTransformator/index?type=TestFile&format=original&path=00/00/00&slug=barfoo&id=1&sf_format=jpg';
-    $viewCacheManager = new sfViewCacheManager(sfContext::getInstance(), new sfNoCache());
-    $path = sfImageTransformExtraPluginConfiguration::setCacheKey($internalUri, '', '', '', $viewCacheManager);
-    $this->assertContains('/thumbnails/TestFile/original/00/00/00/barfoo-1.jpg', $path);
-  }
-
   public function testSetViewCache()
   {
     if(false !== sfConfig::get('sf_cache'))

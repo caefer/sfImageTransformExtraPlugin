@@ -1,7 +1,5 @@
 all:
   .settings:
-    cache_namespace_callable:       sfImageTransformExtraPluginConfiguration::setCacheKey
-
     thumbnail_cache:
       class: sfRawFileCache
       param:
