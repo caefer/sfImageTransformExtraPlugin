@@ -22,16 +22,15 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
 {
   public function __construct($mask, $color = false) 
   {
-    $this->mask  = $mask;
+    $this->mask  = $mask->getAdapter()->getHolder();
     $this->color = $color;
   }
   
   protected function transform(sfImage $image) 
   {
-    $this->image    = $image;
-    $this->mimeType = $image->getMIMEType();
     $resource       = $image->getAdapter()->getHolder();
-    
+    $this->mimeType = $image->getMIMEType();
+
     switch ($this->mimeType) 
     {
       case 'image/png':
@@ -40,18 +39,17 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
       case 'image/gif':
       case 'image/jpg':
       default:
-        //$this->transformDefault($resource); not yet implemented
+        $this->transformDefault($resource);
     }
     
     return $image;
   }
-  
+
   private function transformAlpha($resource) 
   {
     $w = imagesx($resource);
     $h = imagesy($resource);
     
-    $mask   = $this->mask->getAdapter()->getHolder();
     $canvas = imagecreatetruecolor($w, $h);
     
     $color_background = imagecolorallocate($canvas, 0, 0, 0);
@@ -64,7 +62,7 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
       for ($y = 0;$y < $h;$y++) 
       {
         $RealPixel = @imagecolorsforindex($resource, @imagecolorat($resource, $x, $y));
-        $MaskPixel = @imagecolorsforindex($mask, @imagecolorat($mask, $x, $y));
+        $MaskPixel = @imagecolorsforindex($this->mask, @imagecolorat($this->mask, $x, $y));
         $MaskAlpha = 127 - (floor($MaskPixel['red'] / 2) * (1 - ($RealPixel['alpha'] / 127)));
         
         if (false === $this->color) 
@@ -86,8 +84,21 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
     imagesavealpha($resource, true);
     imagecopy($resource, $canvas, 0, 0, 0, 0, $w, $h);
     
-    imagedestroy($mask);
+    imagedestroy($this->mask);
     imagedestroy($canvas);
+  }
+  
+  private function transformDefault($resource) 
+  {
+    $w = imagesx($resource);
+    $h = imagesy($resource);
+    
+    imagealphablending($resource, true);
+    $resource_transparent = imagecolorallocate($resource, 0, 0, 0);
+    imagecolortransparent($resource, $resource_transparent);
+    //$resource_transparent = $this->getTransparentColor($resource);
+    // Copy $mask over the top of $resource maintaining the Alpha transparency
+    imagecopymerge($resource, $this->mask, 0, 0, 0, 0, $w, $h, 100);
   }
 
   /**

@@ -18,7 +18,7 @@
  * @subpackage transforms
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class sfImageRoundedCornersGD extends sfImageTransformAbstract
+class sfImageRoundedCornersGD extends sfImageAlphaMaskGD
 {
   public function __construct($radius, $color = false) 
   {
@@ -28,80 +28,13 @@ class sfImageRoundedCornersGD extends sfImageTransformAbstract
   
   protected function transform(sfImage $image) 
   {
-    $this->image    = $image;
-    $this->mimeType = $image->getMIMEType();
     $resource       = $image->getAdapter()->getHolder();
-    
-    switch ($this->mimeType) 
-    {
-      case 'image/png':
-        $this->transformAlpha($resource);
-        break;
-      case 'image/gif':
-      case 'image/jpg':
-      default:
-        $this->transformDefault($resource);
-    }
-    
-    return $image;
-  }
-  
-  private function transformAlpha($resource) 
-  {
+
     $w = imagesx($resource);
     $h = imagesy($resource);
+    $this->mask   = $this->getMask($w, $h);
     
-    $mask   = $this->getMask($w, $h);
-    $canvas = imagecreatetruecolor($w, $h);
-    
-    $color_background = imagecolorallocate($canvas, 0, 0, 0);
-    imagefilledrectangle($canvas, 0, 0, $w, $h, $color_background);
-    imagealphablending($canvas, false);
-    imagesavealpha($canvas, true);
-    
-    for ($x = 0;$x < $w;$x++) 
-    {
-      for ($y     = 0;$y < $h;$y++) 
-      {
-        $RealPixel = @imagecolorsforindex($resource, @imagecolorat($resource, $x, $y));
-        $MaskPixel = @imagecolorsforindex($mask, @imagecolorat($mask, $x, $y));
-        $MaskAlpha = 127 - (floor($MaskPixel['red'] / 2) * (1 - ($RealPixel['alpha'] / 127)));
-        
-        if (false === $this->color) 
-        {
-          $newcolor = imagecolorallocatealpha($canvas, $RealPixel['red'], $RealPixel['green'], $RealPixel['blue'], intval($MaskAlpha));
-        }
-        else
-        {
-          $newcolorPixel    = sscanf($this->color, '#%2x%2x%2x');
-          $newcolorPixel[0] = ($newcolorPixel[0] * $MaskAlpha + $RealPixel['red'] * (127 - $MaskAlpha)) / 127;
-          $newcolorPixel[1] = ($newcolorPixel[1] * $MaskAlpha + $RealPixel['green'] * (127 - $MaskAlpha)) / 127;
-          $newcolorPixel[2] = ($newcolorPixel[2] * $MaskAlpha + $RealPixel['blue'] * (127 - $MaskAlpha)) / 127;
-          $newcolor         = imagecolorallocate($canvas, $newcolorPixel[0], $newcolorPixel[1], $newcolorPixel[2]);
-        }
-        imagesetpixel($canvas, $x, $y, $newcolor);
-      }
-    }
-    imagealphablending($resource, false);
-    imagesavealpha($resource, true);
-    imagecopy($resource, $canvas, 0, 0, 0, 0, $w, $h);
-    
-    imagedestroy($mask);
-    imagedestroy($canvas);
-  }
-  
-  private function transformDefault($resource) 
-  {
-    $w = imagesx($resource);
-    $h = imagesy($resource);
-    
-    imagealphablending($resource, true);
-    $resource_transparent = imagecolorallocate($resource, 0, 0, 0);
-    imagecolortransparent($resource, $resource_transparent);
-    //$resource_transparent = $this->getTransparentColor($resource);
-    $mask = $this->getMask($w, $h);
-    // Copy $mask over the top of $resource maintaining the Alpha transparency
-    imagecopymerge($resource, $mask, 0, 0, 0, 0, $w, $h, 100);
+    return parent::transform($image);
   }
   
   private function getMask($w, $h) 
