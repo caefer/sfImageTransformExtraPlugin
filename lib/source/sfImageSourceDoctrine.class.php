@@ -66,11 +66,8 @@ class sfImageSourceDoctrine extends sfImageSourceLocalAbstract implements sfImag
       throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
     }
     $attribute = ltrim($url['path'], '/');
-    $attribute = $obj->$attribute;
-    $pos  = strrpos($attribute, '/');
-    $path = substr($attribute, 0, $pos);
-    $file = substr($attribute, $pos+1);
-    $files = sfFinder::type('file')->name($file.'*')->in(sfConfig::get('sf_upload_dir').$path);
+    $filepath = sfConfig::get('sf_upload_dir').'/'.strtolower(get_class($obj)).'/'.$obj->$attribute;
+    $files = sfFinder::type('file')->name(basename($filepath))->in(dirname($filepath));
     return $files[0];
   }
 }
