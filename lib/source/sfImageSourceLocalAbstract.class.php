@@ -32,14 +32,14 @@ abstract class sfImageSourceLocalAbstract implements sfImageSourceInterface
    *
    * @var resource
    */
-  private $resource;
+  protected $resource;
 
   /**
    * mock image absolute path
    *
    * @var string
    */
-  private $filename;
+  protected $filename;
 
   /**
    * Close an resource
