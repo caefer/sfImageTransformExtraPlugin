@@ -100,40 +100,4 @@ class sfImageAlphaMaskGD extends sfImageTransformAbstract
     // Copy $mask over the top of $resource maintaining the Alpha transparency
     imagecopymerge($resource, $this->mask, 0, 0, 0, 0, $w, $h, 100);
   }
-
-  /**
-   * Callback function to extend/alter parameters as given in your thumbnailing.yml.
-   *
-   * This callback adds the resources path to a mask image
-   *
-   * @throws InvalidArgumentException
-   * @param  sfImage $sourceImage The original image
-   * @param  array   $parameters  Configured parameters for this transformation
-   * @return array   $parameters  Extended/altered parameters
-   */
-  public static function prepareParameters($sourceImage, $parameters)
-  {
-    if (!array_key_exists('mask', $parameters))
-    {
-      return $parameters;
-    }
-
-    $user_resources_dir   = sfConfig::get('sf_data_dir') . '/resources';
-    $plugin_paths = ProjectConfiguration::getActive()->getAllPluginPaths();
-    $plugin_resources_dir = $plugin_paths['sfImageTransformExtraPlugin'].'/data/example-resources';
-    if (file_exists($user_resources_dir . '/' . $parameters['mask']))
-    {
-      $parameters['mask'] = new sfImage($user_resources_dir . '/' . $parameters['mask']);
-    }
-    else if (file_exists($plugin_resources_dir . '/' . $parameters['mask']))
-    {
-      $parameters['mask'] = new sfImage($plugin_resources_dir . '/' . $parameters['mask']);
-    }
-    else
-    {
-      throw new InvalidArgumentException('Mask "'.$parameters['mask'].'" could not be found!');
-    }
-
-    return $parameters;
-  }
 }

@@ -55,22 +55,6 @@ class sfImageAlphaMaskGDTest extends PHPUnit_Framework_TestCase
     $mask = new sfImage(dirname(__FILE__).'/../../../../data/caefer.jpg');
     $this->assertType('sfImage', $this->img->alphaMask($mask));
   }
-
-  /**
-   * @expectedException InvalidArgumentException
-   */
-  public function testFailedPrepareParameters() 
-  {
-    $parameters = sfImageAlphaMaskGD::prepareParameters($this->img, array('mask' => 'masks/doesnotexist.gif'));
-    $this->assertType('sfImage', $parameters['mask']);
-  }
-
-  public function testPrepareParameters() 
-  {
-    $parameters = sfImageAlphaMaskGD::prepareParameters($this->img, array('mask' => 'masks/pattern.gif'));
-    $this->assertType('sfImage', $parameters['mask']);
-  }
-
   protected function setUp()
   {
     $this->img = new sfImage(dirname(__FILE__).'/../../../../data/example-resources/overlays/logo.png');
