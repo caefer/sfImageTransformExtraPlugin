@@ -44,9 +44,63 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
     $this->assertEquals(true, $this->cache->set('any/key', serialize($response)));
   }
 
-  public function testRemovePattern()
+  public function testRemovePatternForDoctrineSources()
   {
-    $this->markTestIncomplete('This test has not been implemented yet.');
+    $route = $this->getRoute('sf_image_doctrine');
+    $route->preassemblePattern(array('type' => 'testrecord'));
+    $finder = new sfFinder();
+    $starting_count = count($finder->type('file')->in($this->cache->getOption('cache_dir')));
+    $this->cache->removePattern($route);
+    $files = $finder->type('file')->in($this->cache->getOption('cache_dir'));
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/testrecord/default/01/00/00/test-record-1.gif', $files);
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/testrecord/original/01/00/00/test-record-1.jpg', $files);
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/testrecord/default/02/00/00/test-record-2.gif', $files);
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/testrecord/original/02/00/00/test-record-2.jpg', $files);
+    $this->assertEquals($starting_count - 4, count($files));
+  }
+
+  public function testRemovePatternForFileSources()
+  {
+    $route = $this->getRoute('sf_image_file');
+    $route->preassemblePattern(array('filepath' => 'path/to/file/filename'));
+    $finder = new sfFinder();
+    $starting_count = count($finder->type('file')->in($this->cache->getOption('cache_dir')));
+    $this->cache->removePattern($route);
+    $files = $finder->type('file')->in($this->cache->getOption('cache_dir'));
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/default/path/to/file/filename.gif', $files);
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/original/path/to/file/filename.jpg', $files);
+    $this->assertEquals($starting_count - 2, count($files));
+  }
+
+  public function testRemovePatternForHTTPSources()
+  {
+    $route = $this->getRoute('sf_image_http');
+    $route->preassemblePattern(array('format' => 'default'));
+    $finder = new sfFinder();
+    $starting_count = count($finder->type('file')->in($this->cache->getOption('cache_dir')));
+    $this->cache->removePattern($route);
+    $files = $finder->type('file')->in($this->cache->getOption('cache_dir'));
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/site/default/path/to/file/filename.gif', $files);
+    $this->assertContains($this->cache->getOption('cache_dir').'/thumbnails/site/original/path/to/file/filename.jpg', $files);
+    $this->assertEquals($starting_count - 1, count($files));
+  }
+
+  public function testRemovePatternForPropelSources()
+  {
+    $this->markTestSkipped('Propel is not tested yet');
+  }
+
+  public function testRemovePatternForMockSources()
+  {
+    $route = $this->getRoute('sf_image_mock');
+    $route->preassemblePattern(array());
+    $finder = new sfFinder();
+    $starting_count = count($finder->type('file')->in($this->cache->getOption('cache_dir')));
+    $this->cache->removePattern($route);
+    $files = $finder->type('file')->in($this->cache->getOption('cache_dir'));
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/default.gif', $files);
+    $this->assertNotContains($this->cache->getOption('cache_dir').'/thumbnails/original.jpg', $files);
+    $this->assertEquals($starting_count - 2, count($files));
   }
 
   public function testGetLastModified()
@@ -75,9 +129,22 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
     ));
   }
 
+  private function getRoute($routeName)
+  {
+    $routing = sfContext::getInstance()->getRouting();
+    $route = $routing->getRoutes();
+    return $route[$routeName];
+  }
+
   protected function setUp()
   {
+    $appConfig = ProjectConfiguration::getApplicationConfiguration('frontend', 'test', true);
+    sfContext::createInstance($appConfig);
     $this->cache = $this->getCache(sfConfig::get('sf_cache_dir').'/sfImageTransformExtraPluginUnitTests');
+    $fs = new sfFilesystem();
+    $src_dir = dirname(__FILE__).'/../../../fixtures/thumbnails';
+    $dst_dir = $this->cache->getOption('cache_dir').'/thumbnails';
+    $fs->mirror($src_dir, $dst_dir, new sfFinder(), array('override'=>true));
   }
 
   protected function tearDown()

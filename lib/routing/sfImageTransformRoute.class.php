@@ -145,4 +145,22 @@ class sfImageTransformRoute extends sfRequestRoute
   {
     return call_user_func(array($this->getImageSourceStreamWrapper(), 'buildURIfromParameters'), $this->parameters);
   }
+
+  /**
+   * Preassembles pattern with passed parameters
+   *
+   * This is used to limit matches when removing generated images
+   *
+   * @param  array $params Parameters to be encoded in the pattern
+   * @return void
+   */
+  public function preassemblePattern($params = array())
+  {
+    foreach($params as $key => $value)
+    {
+      $this->pattern = str_replace(':'.$key, $value, $this->pattern);
+    }
+
+    $this->compiled = false;
+  }
 }

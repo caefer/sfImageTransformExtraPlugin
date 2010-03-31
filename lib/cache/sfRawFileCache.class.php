@@ -98,7 +98,18 @@ class sfRawFileCache extends sfFileCache
    */
   public function removePattern($pattern)
   {
-    if (false !== strpos($pattern, '**'))
+    if($pattern instanceof sfRoute)
+    {
+      $paths = array();
+      foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'))) as $path)
+      {
+        if(false !== $pattern->matchesUrl('/'.str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path), array('method' => 'get')))
+        {
+          $paths[] = $path;
+        }
+      }
+    }
+    else if (false !== strpos($pattern, '**'))
     {
       $pattern = str_replace(sfCache::SEPARATOR, DIRECTORY_SEPARATOR, $pattern);
 
