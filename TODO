@@ -1,4 +1,15 @@
- * HTTP cache
+todos for 0.9.8
+ * refactor transform callbacks
+
+todos for 0.9.9
+ * complete propel stuff
+
+todos for 0.9.10
  * write more tests to produce image urls
- * remove or think over
-   test/fixtures/project/web/uploads/daphne.jpg
+
+todos for 1.0.0
+ * review all static resources in plugin
+
+future todos
+ * option for 404 fallback
+ * HTTP cache
