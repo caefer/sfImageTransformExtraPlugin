@@ -1,8 +1,4 @@
- * Create abstract base class for sources to reduce copy and paste code
  * HTTP cache
- * remove sfImageTransformExtraPluginConfiguration::setCacheKey()
  * write more tests to produce image urls
  * remove or think over
-   modules/sfImageTransformator/config/factories.yml -> check if readable so it can be set from plugin configuration class
-   data/example-resources/masks/frame.gif
    test/fixtures/project/web/uploads/daphne.jpg
