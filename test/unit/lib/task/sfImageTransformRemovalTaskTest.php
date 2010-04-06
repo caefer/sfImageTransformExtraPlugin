@@ -25,4 +25,8 @@ require_once 'PHPUnit/Framework.php';
  */
 class sfImageTransformRemovalTaskTest extends PHPUnit_Framework_TestCase
 {
+  public function test__construct()
+  {
+
+  }
 }
