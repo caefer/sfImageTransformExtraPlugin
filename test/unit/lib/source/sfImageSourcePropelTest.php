@@ -13,6 +13,8 @@
 
 /** central bootstrap for unit tests */
 require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
+/** Propel test record for mocking */
+require_once dirname(__FILE__).'/../../../fixtures/model/TestObject.php';
 /** PHPUnit Framework */
 require_once 'PHPUnit/Framework.php';
 
@@ -27,7 +29,7 @@ class sfImageSourcePropelTest extends PHPUnit_Framework_TestCase
 {
   private $testSourceUri = null;
   private $testParameters = array(
-    'type' => 'TestRecord',
+    'type' => 'TestObject',
     'attribute' => 'file',
     'id' => '1'
   );

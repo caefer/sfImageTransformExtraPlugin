@@ -11,6 +11,9 @@
  * @version    SVN: $Id: sfRawFileCache.class.php 63 2010-03-09 04:34:28Z caefer $
  */
 
+/* require Table class */
+require_once(dirname(__FILE__).'/TestTable.php');
+
 /**
  * Mocked Doctrine record to use in tests
  *
@@ -20,11 +23,6 @@
  */
 class TestRecord extends Doctrine_Record
 {
-  public function getTestAttribute()
-  {
-    return 'test-me';
-  }
-
   public function getId()
   {
     return 1;
@@ -33,26 +31,5 @@ class TestRecord extends Doctrine_Record
   public function getFile()
   {
     return 'daphne.jpg';
-  }
-}
-
-/**
- * Mocked Doctrine table to use in tests
- *
- * @package    sfImageTransformExtraPluginUnitTests
- * @subpackage Table
- * @author     Christian Schaefer <caefer@ical.ly>
- */
-class TestRecordTable extends Doctrine_Table
-{
-  public function find($id)
-  {
-    switch ($id)
-    {
-      case 1:
-        return new TestRecord();
-      default:
-        return null;
-    }
   }
 }

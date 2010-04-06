@@ -14,7 +14,9 @@
 /** central bootstrap for unit tests */
 require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
 /** Doctrine test record for mocking */
-require_once dirname(__FILE__).'/../../../fixtures/model/TestRecord.php';
+require_once dirname(__FILE__).'/../../../fixtures/model/doctrine/TestRecord.php';
+/** Propel test record for mocking */
+require_once dirname(__FILE__).'/../../../fixtures/model/TestObject.php';
 /** PHPUnit Framework */
 require_once 'PHPUnit/Framework.php';
 
