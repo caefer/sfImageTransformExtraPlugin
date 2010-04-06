@@ -101,7 +101,7 @@ class sfRawFileCache extends sfFileCache
     if($pattern instanceof sfRoute)
     {
       $paths = array();
-      foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'))) as $path)
+      foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'), RecursiveDirectoryIterator::FOLLOW_SYMLINKS)) as $path)
       {
         if(false !== $pattern->matchesUrl('/'.str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path), array('method' => 'get')))
         {
