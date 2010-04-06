@@ -18,7 +18,7 @@
  * @subpackage Peer
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class TestPeer
+class TestObjectPeer
 {
   public static function retrieveByPK($pk)
   {

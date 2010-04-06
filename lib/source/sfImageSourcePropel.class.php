@@ -57,7 +57,7 @@ class sfImageSourcePropel extends sfImageSourceLocalAbstract implements sfImageS
       throw new sfError404Exception('Could not find Propel Peer class for "'.$url['host'].'"');
     }
     
-    if(!($obj = call_user_func(array($url['host'], 'retrieveByPk'), $url['fragment'])))
+    if(!($obj = call_user_func(array($url['host'].'Peer', 'retrieveByPK'), $url['fragment'])))
     {
       throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
     }

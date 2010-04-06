@@ -12,7 +12,7 @@
  */
 
 /* require Peer class */
-require_once(dirname(__FILE__).'/TestPeer.php');
+require_once(dirname(__FILE__).'/TestObjectPeer.php');
 
 /**
  * Mocked Propel record to use in tests
