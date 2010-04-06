@@ -1,15 +1,19 @@
-todos for 0.9.8
- * refactor transform callbacks
-
 todos for 0.9.9
  * complete propel stuff
-
-todos for 0.9.10
- * write more tests to produce image urls
+ * complete removal task and event
 
 todos for 1.0.0
+ * update and complete README
  * review all static resources in plugin
 
-future todos
- * option for 404 fallback
- * HTTP cache
+todos for 1.0.1
+ * write functional tests
+
+todos for 1.0.2
+ * write more tests to produce image urls
+
+todos for 1.1.0
+ * implement configurable 404 fallback
+
+todos for 1.1.1
+ * reach 100% code coverage
