@@ -1,6 +1,6 @@
 todos for 0.9.9
- * complete propel stuff
- * complete removal task and event
+ * complete removal event
+ * refactor yml to read sfImage: sources properly
 
 todos for 1.0.0
  * update and complete README

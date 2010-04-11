@@ -1,6 +1,4 @@
-﻿> **THIS IS HIGHLY PRELIMINARY!**
-
-# Image manipulation made even easier - sfImageTransformExtraPlugin
+﻿^# Image manipulation made even easier - sfImageTransformExtraPlugin
 
 ![sfImageTransformExtraPlugin](http://www.symfony-project.org/uploads/plugins/4366ffec3f32548c30e31094c3dcbcea.png)
 
@@ -10,9 +8,9 @@ On a website you ususally find lots of images and a set of formats.
 
 For example let's say a user avatar is always ``80x80 PNG`` while a homepage top image is always ``320x140 JPG`` with round corners.
 
-As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and more.
+As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and much much more.
 
-Using such an automatism means you have to write code and perform all necessary transformation on upload, no matter if the generated files are ever requested. It also means that design changes that also change the formats lead to change of business logic rather than just templates.
+Using such an automatism means you have to write code and perform all necessary transformation - usually on upload, no matter if the generated files are ever requested. It also means that design changes that also change the formats lead to change of business logic rather than just templates.
 
 This is where sfImageTransformExtraPlugin springs to action as it provides a way to configure formats with multiple transformations.
 In your templates you only refer to the format by name which results in an SEO friendly image URL. The image itself will be generated on first request and (in production environments) written to the filesystem.
@@ -25,7 +23,7 @@ Here are some of the key features:
 *   Generating images on request
 *   Can be run as a web service for a content delivery network (CDN)
 *   Supporting image file sources stored in databases via Doctrine or Propel, remote files and more
-*   Full control over the thumbnail URLs
+*   Full control over the thumbnail URLs and therefor easy to adapt to your SEO requirements
 *   Generated API documentation
 *   Unit tested
 *   Easy to extend
@@ -69,7 +67,7 @@ Here are just a few examples that were all transformed from the above image.
 ![pattern](http://stat.ical.ly/thumbnails/pattern.png "Alpha Mask (Pattern) Transformation")
 ![just](http://stat.ical.ly/thumbnails/just.gif "Create & Text Transformation")  
 
-And of course:
+And of course a simple scaling:
 
 ![scale](http://stat.ical.ly/thumbnails/scale.jpg "Thumbnail Scale Transformation")
 
@@ -185,8 +183,8 @@ The thumbnail image is generated on the first request. All succeeding requests a
 
 ### The caching mechanism
 
-Image generation is quite expansive in terms of CPU and memory. This is why sfsfImageTransformExtraPlugin by default stores generated images for the production environment on the filesystem.
-For this the custom cache class ``sfRawFileCache`` is used which is basically a copy of sfFileCache but does not prepend the cached file with expire time information but instead saves only the generated image.
+Image generation is quite expansive in terms of CPU and memory usage. This is why sfsfImageTransformExtraPlugin by default stores generated images for the production environment on the filesystem.
+For this the custom cache class ``sfRawFileCache`` is used which is basically a copy of sfFileCache but does not prepend the cached file with expire time information but instead saves only the generated image. It also maintains the real filename and does not add a ``.cache`` suffix.
 
 You can see the typical lifecycle of a generated image in the following Firebug screenshots.
 
@@ -248,7 +246,7 @@ Clear the cache to enable the autoloading to find the new classes:
 
     $ php symfony cc
 
-> Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well so please follow the [README](http://www.symfony-project.org/plugins/sfImageTransformPlugin/1_3_1?tab=plugin_readme "sfImageTransformPlugin README").
+> Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well so please follow the [README](http://www.symfony-project.org/plugins/sfImageTransformPlugin?tab=plugin_readme "sfImageTransformPlugin README").
 
 Next you have to configure your routes.
 
@@ -279,11 +277,13 @@ You can now generate ``<img />`` tags to these images like this.
   // resulting in: http://localhost/thumbnails/pixelate/logo.png.jpg
   ?>
 
-> Please note that the filepath is expected relative to ``sf_upload_dir``!
+> Please note that the prefix filepath - ``/thumbnails`` in the above example - is required to exist and be writable for the webserver!
 
 ## Configuration for local image sources linked by a Doctrine or Propel record
 
-Your image sources lie in a directory accessible to your web server and you want to keep the filenames.
+When you develop on symfony chances are that uploaded image files are located in the ``sf_upload_dir`` and their filenames are stored in the database. sfImageTransformExtraPlugin comes with two images source classes that you can use to work with these files.
+
+Your image sources are located in a directory accessible to your web server and you want to keep the filenames.
 
 Create a route like the following in your applications ``routing.yml``.
 
@@ -300,7 +300,7 @@ Create a route like the following in your applications ``routing.yml``.
         sf_format: 'gif|png|jpg'
         sf_method: [ get ]
       options:
-        image_source: Doctrine
+        image_source: Doctrine # or Propel
         segment_separators: [ '/', '.', '-' ]
   ...
 
@@ -315,7 +315,9 @@ You can now generate ``<img />`` tags to these images like this.
 
 ## Configuration for remote image sources to be read over HTTP
 
-Your image sources lie in a directory accessible to your web server and you want to keep the filenames.
+If you plan to build a content delivery network (CDN) and run sfImageTransformExtraPlugin as a webservice your image sources will not be available locally but instead over HTTP.
+
+Your image sources are located in a directory not accessible to your web server and you want to keep the filenames.
 
 Create a route like the following in your applications ``routing.yml``.
 
@@ -326,7 +328,7 @@ Create a route like the following in your applications ``routing.yml``.
       param: { module: sfImageTransformator, action: index, protocol: http, domain: www.symfony-project.org }
       requirements:
         format:    '[\w_-]+'
-        sf_format: http|https
+        protocol:  'http|https'
         domain:    '[\w-_.]+'
         filepath:  '[\w/-_.]+'
         sf_format: 'gif|png|jpg'
@@ -372,24 +374,57 @@ EXAMPLE
 
 If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
 
-    <?php echo image_tag('http://your.webservice.url'.url_for(...), array());
+    <?php echo image_tag('http://your.webservice.url'.url_for(...), array()); ?>
 
 ### How can I use a custom image source?
 
-write a new stream wrapper
+It doesn't matter where your source images are stored and how you need to receive the filepath/URL you can easily implement a solution by following two easy steps:
 
-### How can I configure a transformation that needs an object for a parameter?
+1. Write a new route
 
-prepareParameters()
+When defining the URL of the new route the only thing you need to care about is the list of parameters. You have to provide all parameters that are necessary to retrieve the images location.
+
+In the case of a Doctrine model storing the filename of a local file you need to know the model type (i.e. NewsBulletin), the ID of the object (i.e. 123) and the model attribute or field which stores the filename (i.e. file). Depending on your requirements you might need different parameters to identify the source.
+
+You will also most certainly need a parameter for the desired format.
+
+    sf_image:
+      class: sfImageTransformRoute
+      ulr:   /thumbnails/:format/:special.sf_format
+	  param: { module: sfImageTransformator, action: index }
+      requirements:
+        format:    '[\w_-]+'
+        sf_format: http|https
+        somespecialparameter:    '[\w-_.]+'
+        sf_method: [ get ]
+      options:
+        image_source: Special
+
+2. Write a new sfImageSource class
+
+Once you defined the parameters you can implement the sfImageSource class by implementing ``sfImageSourceInterface`` and ``barfoo``.
+
+If the image source files are stored on the local filesystem accessible to the webserver your need to implement ``sfImageSourceLocal``. For all other locations please use ``sfImageSourceRemote`` as PHP functions like ``stat()`` only work with local files and therefor need to be faked .
+
+    class sfImageSourceSpecial extends sfImageSourceRemote implements sfImageSourceInterface
+	{
+	  ...
+	}
+
+### How can I configure a transformation that needs an instance of sfImage for a parameter?
+
+Some transformations like ``sfTransformOverlayGD`` require you to pass an instance of sfImage as one of the parameters. In case of ``sfTransformOverlayGD`` this would be the image to be used as an overlay/watermark.
+
+As you can not configure objects in a YAML file you can just specify the filepath to the appropriate image prefixed by ``sfImage:``.
+
+    ..EXAMPLE
 
 ### How can I run the tests?
 
     $ cd /path/to/sfImageTransformExtraPlugin
-  $ phpunit --tap test/sfImageTransformExtraPluginsTests.php
+    $ phpunit --tap test/sfImageTransformExtraPluginsTests.php
 
 ### How can I generate the API documentation?
 
     $ cd /path/to/sfImageTransformExtraPlugin
     $ phpdoc ...
-
-### How can I use an HTTP cache like Squid, Varnish or Akamai instead of the filesystem?
