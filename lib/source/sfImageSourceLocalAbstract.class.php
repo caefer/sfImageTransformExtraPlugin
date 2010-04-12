@@ -99,6 +99,18 @@ abstract class sfImageSourceLocalAbstract implements sfImageSourceInterface
     return fread($this->resource, $count);
   }
 
+  /**
+   * Seeks to specific location in a stream
+   *
+   * @param int  $offset
+   * @param int  $whence
+   * @return bool
+   */
+  public function stream_seek($offset, $whence = SEEK_SET)
+  {
+    return fseek($this->resource, $offset, $whence);
+  }
+
   /** 
    * Retrieve information about a file resource
    * 
