@@ -108,7 +108,7 @@ abstract class sfImageSourceLocalAbstract implements sfImageSourceInterface
    */
   public function stream_seek($offset, $whence = SEEK_SET)
   {
-    return fseek($this->resource, $offset, $whence);
+    return 0 == fseek($this->resource, $offset, $whence);
   }
 
   /** 
@@ -119,6 +119,16 @@ abstract class sfImageSourceLocalAbstract implements sfImageSourceInterface
   public function stream_stat()
   {
     return fstat($this->resource);
+  }
+
+  /** 
+   * Retrieve the current position of a stream
+   * 
+   * @return int 
+   */ 
+  public function stream_tell()
+  {
+    return ftell($this->resource);
   }
 
   /**
