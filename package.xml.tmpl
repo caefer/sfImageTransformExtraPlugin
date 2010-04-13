@@ -59,11 +59,13 @@ Instead of changing your business logic when the design requires new formats you
         <api>stable</api>
       </stability>
       <license uri="http://www.symfony-project.org/license">MIT license</license>
-      <date>2010-04-11</date>
+      <date>2010-04-13</date>
       <license>MIT</license>
       <notes>
        * caefer: implemented sfImageSourcePropel to accept image sources stored in the database for Propel projects
-	   * caefer: implemented task to remove existing thumbnail files based on appropriate routes
+       * caefer: implemented task to remove existing thumbnail files based on appropriate routes
+       * caefer: bugfix. getimagesize() relies on seek() and tell(). both now implemented in the wrappers (thanks sebastien!)
+       * caefer: bugfix. for file sources glob() did match a.jpg as well as ab.jpg. this is solved by a tightern pattern now (thanks miloslav!)
        </notes>
     </release>
     <release>
