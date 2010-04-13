@@ -1,5 +1,4 @@
-todos for 0.9.9
- * complete removal event
+todos for 0.9.10
  * refactor yml to read sfImage: sources properly
 
 todos for 1.0.0
@@ -8,6 +7,7 @@ todos for 1.0.0
 
 todos for 1.0.1
  * write functional tests
+ * reorganise and complete tests for sources
 
 todos for 1.0.2
  * write more tests to produce image urls
