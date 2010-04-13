@@ -52,10 +52,11 @@ class sfImageSourceFile extends sfImageSourceLocalAbstract implements sfImageSou
     }
 
     $url  = parse_url($path);
-    $pos  = strrpos($url['path'], '/');
-    $path = substr($url['path'], 0, $pos);
-    $file = substr($url['path'], $pos+1);
-    $files = sfFinder::type('file')->name(array($file.'.{jpg,png,gif,jpeg}'))->in(sfConfig::get('sf_upload_dir').$path);
+    $path = dirname($url['path']);
+    $file = basename($url['path']);
+    var_dump($file);
+    $files = sfFinder::type('file')->name(array($file.'{.jpg,.png,.gif,.jpeg,}'))->in(sfConfig::get('sf_upload_dir').$path);
+    var_dump($files);
 
     if(!count($files))
     {
