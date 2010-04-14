@@ -106,7 +106,7 @@ class sfImageTransformManager
   {
     foreach($parameters as $key => $parameter)
     {
-      $pathinfo = strtolower(pathinfo($parameter));
+      $pathinfo = pathinfo($parameter);
       if(in_array($pathinfo['extension'], array('jpg', 'jpeg', 'gif', 'png')))
       {
         $filepath = $pathinfo['dirname'];
