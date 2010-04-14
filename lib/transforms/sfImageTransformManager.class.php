@@ -106,10 +106,11 @@ class sfImageTransformManager
   {
     foreach($parameters as $key => $parameter)
     {
-      if(in_array(strtolower(substr($parameter, -4)), array('.jpg', '.gif', '.png')))
+      $pathinfo = strtolower(pathinfo($parameter));
+      if(in_array($pathinfo['extension'], array('jpg', 'jpeg', 'gif', 'png')))
       {
-        $filepath = dirname($parameter);
-        $filename = basename($parameter);
+        $filepath = $pathinfo['dirname'];
+        $filename = $pathinfo['basename'];
 
         $pluginDirs = ProjectConfiguration::getActive()->getAllPluginPaths();
         $pluginDir = $pluginDirs['sfImageTransformExtraPlugin'];
