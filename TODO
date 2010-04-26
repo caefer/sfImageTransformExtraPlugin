@@ -1,6 +1,3 @@
-todos for 0.9.10
- * refactor yml to read sfImage: sources properly
-
 todos for 1.0.0
  * update and complete README
  * review all static resources in plugin

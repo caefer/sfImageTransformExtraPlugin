@@ -30,6 +30,6 @@ class TestObject
 
   public function getFile()
   {
-    return 'daphne.jpg';
+    return 'caefer.jpg';
   }
 }

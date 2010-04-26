@@ -1,4 +1,4 @@
-﻿^# Image manipulation made even easier - sfImageTransformExtraPlugin
+﻿Image manipulation made even easier - sfImageTransformExtraPlugin
 
 ![sfImageTransformExtraPlugin](http://www.symfony-project.org/uploads/plugins/4366ffec3f32548c30e31094c3dcbcea.png)
 
@@ -8,12 +8,13 @@ On a website you ususally find lots of images and a set of formats.
 
 For example let's say a user avatar is always ``80x80 PNG`` while a homepage top image is always ``320x140 JPG`` with round corners.
 
-As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is the [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and much much more.
+As it is far too costly to prepare all these different formats by hand there are automated ways to generate them from source images uploaded by a user. One of the best tools for this in the symfony world is [sfImageTransformPlugin](http://www.symfony-project.org/plugins/sfImageTransformPlugin) which enables you to perform many sophisticated transformations on your images such as resizing, color manipulation, overlays and much much more. It is not only easy to use but easy to extend as well. Writing your own transformation is a bliss.
 
-Using such an automatism means you have to write code and perform all necessary transformation - usually on upload, no matter if the generated files are ever requested. It also means that design changes that also change the formats lead to change of business logic rather than just templates.
+Using such an automatism means you have to write code and perform all necessary transformation - usually on upload, no matter if the generated files are ever requested. It also means that design changes that change the formats as well lead to a change of business logic rather than just templates.
 
-This is where sfImageTransformExtraPlugin springs to action as it provides a way to configure formats with multiple transformations.
-In your templates you only refer to the format by name which results in an SEO friendly image URL. The image itself will be generated on first request and (in production environments) written to the filesystem.
+This is where sfImageTransformExtraPlugin springs into action as it provides a way to configure formats with multiple transformations.
+
+In your templates you only refer to the format by name which results in an SEO friendly image URL (a URL that you have full control over). The image itself will be generated on first request and (in production environments) written to the filesystem.
 
 Here are some of the key features:
 
@@ -198,7 +199,7 @@ The image is read directly from the filesystem without invoking a PHP process.
 
 ![firebug-3-notmodified](http://stat.ical.ly/thumbnails/firebug-3-notmodified.jpg "Third and succeeding requests on a thumbnail will be served from the browser cache")  
 
-Apache automatically informs the browser that the image has not been modified by sending a ``304`` status.
+Apache automatically informs the browser that the image has not been modified by sending a ``304`` status (depending on your Apache configuration, however the described behaviour is the default).
 
 As you can see the time needed to deliver a generated image after the second request is drastically reduced.
 (The times will vary on different installations.)
@@ -240,13 +241,20 @@ You also need to configure automatic mime detection for sfImageTransformPlugin i
   ...
 
 Automatic mime detection is absolutely necessary!
-Of course you can point the ``font_fir`` to your own location containing True Type Fonts.
+Of course you can point the ``font_dir`` to your own location containing True Type Fonts.
 
 Clear the cache to enable the autoloading to find the new classes:
 
     $ php symfony cc
 
 > Note: The plugin requires sfImageTransformPlugin to be installed as well. The dependencies described there apply as well so please follow the [README](http://www.symfony-project.org/plugins/sfImageTransformPlugin?tab=plugin_readme "sfImageTransformPlugin README").
+
+The default routes of the plugin expect all thumbails to be called from the relative URL ``/thumbnails/..``. So you have to make sure, that this folder (``SF_ROOT_DIR/web/thumbnails``) exists and is writable to the web server.
+
+    $ mkdir SF_ROOT_DIR/web/thumbnails
+    $ chmod 777 SF_ROOT_DIR/web/thumbnails
+
+The ``/thumbnails`` path is specified in your routes. If you make changes to the routes you have to make sure that the equivalent path exists and is writable.
 
 Next you have to configure your routes.
 
@@ -257,7 +265,7 @@ Your image sources lie in a directory accessible to your web server and you want
 Create a route like the following in your applications ``routing.yml``.
 
     // /apps/yourapplication/config/routing.yml
-  sf_image:
+    sf_image:
       class: sfImageTransformRoute
       url:   /thumbnails/:format/:filepath.:sf_format
       param: { module: sfImageTransformator, action: index }
@@ -308,10 +316,19 @@ You can now generate ``<img />`` tags to these images like this.
 
     <?php
     echo image_tag(url_for('sf_image_doctrine', array('format' => 'pixelate', 'sf_subject' => $record)));
-  // resulting in: http://localhost/thumbnails/News/pixelate/01/00/00/mytest-1.jpg
-  ?>
+    // resulting in: http://localhost/thumbnails/News/pixelate/01/00/00/mytest-1.jpg
+    ?>
 
 ``$record`` in this example is either a Doctrine or Propel record.
+
+The ``:path`` attribute is provided by the sfImageTransformExtraPlugins own route class ``sfImageTransformRoute``. It will take the ``id`` attribute and form a three level deep path from it.
+
+    // examples
+    1 => 01/00/00
+    37410 = 10/74/03
+    ..
+
+This path can ensure that you won't store more than 100 files per directory which is necessary to avoid imperformance from the filesystem.
 
 ## Configuration for remote image sources to be read over HTTP
 
@@ -346,35 +363,111 @@ You can now generate ``<img />`` tags to these images like this.
 
 ### Invalidating generated images
 
-trigger event
-run task
+Sometimes you want to remove already generated images from your filesystem i.e. if the original source image was changed.
 
-see also twiggering invalidation when using sfImageTransformExtraPlugin as a web service further down in this document.
+For this there is a symfony task which takes two mandatory arguments.
+
+    $ ./symfony help transforms:remove
+    Usage:
+     symfony transforms:remove  application route
+    
+     Aliases: remove-thumbnails
+    
+     Arguments:
+      application  The application name
+      route        The sf_image route that generated the image(s) you want to remove
+
+     Description:
+      Removes thumbnails generated by sfImageTransformExtraPlugin.
+
+Let's take a route from the previous examples.
+
+    // /apps/yourapplication/config/routing.yml
+    sf_image:
+      class: sfImageTransformRoute
+      url:   /thumbnails/:format/:filepath.:sf_format
+      param: { module: sfImageTransformator, action: index }
+      requirements:
+        format:    '[\w_-]+'
+        filepath:  '[\w/]+'
+        sf_format: 'gif|png|jpg'
+        sf_method: [ get ]
+      options:
+        image_source: File
+
+Assuming that this route is active for your frontend application you can now do the following to remove all images generated by that route.
+
+    $ ./symfony transforms:remove frontend sf_image_file
+     Do you really want to delete all generated images?
+    y
+    >> files-    Generated images removed.
+
+To be more specific you can provide all attributes available for the route.
+
+To remove only images for this route that used the ``default`` format:
+
+    $ ./symfony transforms:remove frontend sf_image_file --format=default
+    >> files-    Generated images removed.
+
+To remove only images for this route that are of type ``jpg``:
+
+    $ ./symfony transforms:remove frontend sf_image_file --sf_format=jpg
+    >> files-    Generated images removed.
+
+Of course you can combine all available attributes. In this case to remove all ``jpg`` images that were generated using the ``default`` format (for example if you changed the mimetype of that particular format).
+
+    $ ./symfony transforms:remove frontend sf_image_file --format=default --sf_format=jpg
+    >> files-    Generated images removed.
+
 
 ## Advanced usage:
 
 ### How can I use static resources like fonts, alpha masks and overlay images?
 
+To use your own Treu Type Fonts you have to configure sfImageTransformPlugin in your ``app.yml``.
+
+    // /apps/yourapplication/config/app.yml
+    all:
+      sfImageTransformPlugin:
+        mime_type:
+          auto_detect:  true
+          library:    gd_mime_type #  gd_mime_type (GD), Fileinfo (PECL), MIME_Type (PEAR)
+        font_dir:     /path/to/your/fonts-dir
+
+If a transformation expects an sfImage object as a mask or overlay or other resource there is a mechanism in place forming that object for you.
+All you have to do is to specify the relative path to your resource image. Let's look at a previous example:
+
+          star6:
+            ...
+            transformations:
+              ...
+              - { adapter: GD, transformation: overlay, param: { overlay: overlays/star_frame.png, position: center }}
+              - { adapter: GD, transformation: alphaMask, param: { mask: masks/star_mask.gif }}
+
+``sfImageTransformManager`` will automatically convert any filepath/filename with one of the following extensions (``jpg``, ``jpeg``, ``gif``, ``png``) to an instance of sfImage.
+The relative filepath will be looked up at the following locations: ``/path/to/your/project/data/resources/`` or (for the default formats) ``/path/to/your/project/plugins/sfImageTransformExtraPlugin/data/example-resources``.
+
+So for the above example the files will be looked up in the following order:
+
+1. ``/path/to/your/project/data/resources/overlays/star_frame.png``
+   ``/path/to/your/project/data/resources/masks/star_mask.gif``
+
+2. ``/path/to/your/project/plugins/sfImageTransformExtraPlugin/data/example-resources/overlays/star_frame.png``
+   ``/path/to/your/project/plugins/sfImageTransformExtraPlugin/data/example-resources/masks/star_mask.gif``
+
+
 ### How can I run sfImageTransformExtraPlugin as a web service?
 
 To run sfImageTransformExtraPlugin as a web service you create a new symfony installation and install the plugin as described in the previous chapter.
 
-You then have to create a configuration file called ``thumbnailing.yml`` in your applications config directory with the following contents:
+Further you will have to use your own route for remote image sources via HTTP (see above).
 
-    all:
-      source_image:
-        class: sfImageSourceHTTP
-        param:
-          url_schema: http://yourhost/%type/%id/%attribute
-
-As the invalidation of the generated images can not be triggered with an event you will have to create a new route that can be called as a trigger.
-
-EXAMPLE
-
+Remember to provide the format and all attributes required to locate the remote image source in the routes URL.
 
 If you serve your generated images from a web service installation you have to prefix the URL with the domain of your service.
 
-    <?php echo image_tag('http://your.webservice.url'.url_for(...), array()); ?>
+    <?php echo image_tag('http://your.webservice.url'.url_for('sf_image_remote', ...), array()); ?>
+
 
 ### How can I use a custom image source?
 
@@ -407,17 +500,14 @@ Once you defined the parameters you can implement the sfImageSource class by imp
 If the image source files are stored on the local filesystem accessible to the webserver your need to implement ``sfImageSourceLocal``. For all other locations please use ``sfImageSourceRemote`` as PHP functions like ``stat()`` only work with local files and therefor need to be faked .
 
     class sfImageSourceSpecial extends sfImageSourceRemote implements sfImageSourceInterface
-	{
-	  ...
-	}
+    {
+      ...
+    }
 
-### How can I configure a transformation that needs an instance of sfImage for a parameter?
+That is all you have to do.
 
-Some transformations like ``sfTransformOverlayGD`` require you to pass an instance of sfImage as one of the parameters. In case of ``sfTransformOverlayGD`` this would be the image to be used as an overlay/watermark.
+Please make sure that the base URL (in the above example ``/thumbnails``) exists and is writable.
 
-As you can not configure objects in a YAML file you can just specify the filepath to the appropriate image prefixed by ``sfImage:``.
-
-    ..EXAMPLE
 
 ### How can I run the tests?
 
@@ -427,4 +517,5 @@ As you can not configure objects in a YAML file you can just specify the filepat
 ### How can I generate the API documentation?
 
     $ cd /path/to/sfImageTransformExtraPlugin
-    $ phpdoc ...
+    $ phpdoc -o  HTML:frames:DOM/phphtmllib -d . -t /path/to/where/you/want/the/apidocs/to/be/generated
+

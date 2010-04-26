@@ -27,7 +27,7 @@ class sfImageSourceFileTest extends PHPUnit_Framework_TestCase
 {
   private $testSourceUri = null;
   private $testParameters = array(
-    'filepath' => 'testrecord/daphne.jpg'
+    'filepath' => 'testrecord/caefer.jpg'
   );
 
   public function testStream_close()
@@ -96,12 +96,12 @@ class sfImageSourceFileTest extends PHPUnit_Framework_TestCase
    */
   public function testFailedBuildURIfromParameters()
   {
-    $this->assertEquals('sfImageSource://file/testrecord/daphne.jpg', sfImageSourceFile::buildURIfromParameters(array()));
+    $this->assertEquals('sfImageSource://file/testrecord/caefer.jpg', sfImageSourceFile::buildURIfromParameters(array()));
   }
 
   public function testBuildURIfromParameters()
   {
-    $this->assertEquals('sfImageSource://file/testrecord/daphne.jpg', sfImageSourceFile::buildURIfromParameters($this->testParameters));
+    $this->assertEquals('sfImageSource://file/testrecord/caefer.jpg', sfImageSourceFile::buildURIfromParameters($this->testParameters));
   }
 
   protected function setUp()

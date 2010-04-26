@@ -30,6 +30,6 @@ class TestRecord extends Doctrine_Record
 
   public function getFile()
   {
-    return 'daphne.jpg';
+    return 'caefer.jpg';
   }
 }
