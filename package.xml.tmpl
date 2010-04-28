@@ -62,6 +62,10 @@ Instead of changing your business logic when the design requires new formats you
       <date>2010-04-28</date>
       <license>MIT</license>
       <notes>
+       PLEASE NOTE!
+       In this release there is a bugfix of the autoboxing feature which requires you to change your thumbnailing.yml if you use transformations like overlay or alphamask.
+       In this case you have to prefix the overlay and mask parameters with "sfImage|". See http://trac.symfony-project.org/changeset/29292 for an example.
+
        * caefer: bugfix: autoboxing of parameters now limited to parameters prefixed with 'className|' 
        * caefer: updated docblock comments for autoboxing related methods
        </notes>
