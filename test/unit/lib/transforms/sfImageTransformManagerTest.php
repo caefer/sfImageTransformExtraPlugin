@@ -34,7 +34,7 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
             'adapter' => 'GD',
             'transformation' => 'overlay',
             'param' => array(
-              'overlay' => 'overlays/logo.png',
+              'overlay' => 'sfImage|overlays/logo.png',
             )
           ),
         ),
@@ -50,7 +50,7 @@ class sfImageTransformManagerTest extends PHPUnit_Framework_TestCase
             'adapter' => 'GD',
             'transformation' => 'overlay',
             'param' => array(
-              'overlay' => 'overlays/doesnotexist.png',
+              'overlay' => 'sfImage|overlays/doesnotexist.png',
             )
           ),
         ),

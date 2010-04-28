@@ -14,13 +14,13 @@
         mime_type:              image/png
         transformations:
           - { adapter: GD, transformation: resize,    param: { width: 300, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: alphaMask, param: { mask: masks/frame.gif }}
+          - { adapter: GD, transformation: alphaMask, param: { mask: sfImage|masks/frame.gif }}
       demo_alpha_mask_pattern:
         quality:                75
         mime_type:              image/png
         transformations:
           - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: alphaMask, param: { mask: masks/pattern.gif }}
+          - { adapter: GD, transformation: alphaMask, param: { mask: sfImage|masks/pattern.gif }}
       demo_rounded_corners:
         quality:                75
         mime_type:              image/gif
@@ -171,7 +171,7 @@
         mime_type:              image/jpg
         transformations:
           - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: overlay, param: { overlay: overlays/wlcp.png, position: top-right }}
+          - { adapter: GD, transformation: overlay, param: { overlay: sfImage|overlays/wlcp.png, position: top-right }}
       demo_pixelBlur:
         quality:                75
         mime_type:              image/jpg
