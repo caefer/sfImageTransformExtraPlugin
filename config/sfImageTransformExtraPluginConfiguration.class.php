@@ -21,7 +21,7 @@
  */
 class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
 {
-  const VERSION = '1.0.0-DEV';
+  const VERSION = '1.0.2';
 
   /**
    * @see sfPluginConfiguration
