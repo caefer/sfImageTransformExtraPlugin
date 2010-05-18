@@ -23,6 +23,7 @@
  * @package    sfImageTransformExtraPlugin
  * @subpackage source
  * @author     Christian Schaefer <caefer@ical.ly>
+ * @author     Jan Schumann <js@schumann-it.com>
  */
 abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract implements sfImageSourceInterface
 {
@@ -32,14 +33,24 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
   protected $offset = 0;
 
   /**
+   * @var string $content Binary contents of the remote file. Unfortunately this is necessary as remote streams are not seekable but getimagesize() tries to do that..
+   */
+  private $content = null;
+
+  protected function getSize($filename)
+  {
+    $headers = get_headers($filename, 1);
+    return $headers['Content-Length'];
+  }
+
+  /**
    * Tests for end-of-file on a file pointer
    *
    * @return bool
    */
   public function stream_eof()
   {
-    $headers = get_headers($this->filename, 1);
-    return $this->offset >= $headers['Content-Length'];
+    return $this->offset >= $this->getSize($this->filename);
   }
 
   /**
@@ -48,11 +59,16 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
    * @param int $count
    * @return string
    */
-  public function stream_read($count)
+  final public function stream_read($count)
   {
-    $content = stream_get_contents($this->resource, $count);
-    $this->offset += strlen($content);
-    return $content;
+    if(is_null($this->content))
+    {
+      $this->content = stream_get_contents($this->resource);
+    }
+
+    $chunk = substr($this->content, $this->offset, $count);
+    $this->offset += strlen($chunk);
+    return $chunk;
   }
 
   /**
@@ -73,8 +89,7 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
         $this->offset += $offset;
         break;
       case SEEK_END:
-        $headers = get_headers($this->filename, 1);
-        $this->offset = $headers['Content-Length'] + $offset;
+        $this->offset = $this->getSize($this->filename) + $offset;
         break;
     }
     return true;
@@ -118,10 +133,9 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
    */
   public function url_stat($path , $flags)
   {
-    $headers = get_headers($this->translatePathToFilename($path), 1);
     return array(
       'mode' => 0555,
-      'size' => $headers['Content-Length']
+      'size' => $this->getSize($this->translatePathToFilename($path))
     );
   }
 }

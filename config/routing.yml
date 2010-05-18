@@ -13,18 +13,6 @@ sf_image_doctrine:
     image_source: Doctrine
     segment_separators: [ '/', '.', '-' ]
 
-sf_image_file:
-  class: sfImageTransformRoute
-  url:   /thumbnails/:format/:filepath.:sf_format
-  param: { module: sfImageTransformator, action: index }
-  requirements:
-    format:    '[\w_-]+'
-    filepath:  '[\w/.]+'
-    sf_format: 'gif|png|jpg'
-    sf_method: [ get ]
-  options:
-    image_source: File
-
 sf_image_http:
   class: sfImageTransformRoute
   url:   /thumbnails/site/:format/:filepath.:sf_format
@@ -38,6 +26,18 @@ sf_image_http:
     sf_method: [ get ]
   options:
     image_source: HTTP
+
+sf_image_file:
+  class: sfImageTransformRoute
+  url:   /thumbnails/:format/:filepath.:sf_format
+  param: { module: sfImageTransformator, action: index }
+  requirements:
+    format:    '[\w_-]+'
+    filepath:  '[\w/.]+'
+    sf_format: 'gif|png|jpg'
+    sf_method: [ get ]
+  options:
+    image_source: File
 
 sf_image_mock:
   class: sfImageTransformRoute
