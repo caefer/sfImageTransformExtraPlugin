@@ -166,6 +166,10 @@ Now we want to get rid of the bits that stick out by applying an alpha mask.
 
 Done! ;)
 
+> Please note that for overlay and alphaMask transformations
+> you need to prefix the resource path with "sfImage|" as this
+> automatically converts the path into an sfImage object.
+
 
 ## How does it work?
 

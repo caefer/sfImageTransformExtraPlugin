@@ -51,6 +51,26 @@ Instead of changing your business logic when the design requires new formats you
   <changelog>
     <release>
       <version>
+        <release>1.0.3</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-05-18</date>
+      <license>MIT</license>
+      <notes>
+       > This is a bugfix release. Remote image sources depending on their binary structure might not have been able to detect the mime type of. This was caused by getimagesize() seeking when mime information could not be read from the first chunk of data.
+
+       * caefer: moved default http route upwards to avoid a conflict with the default file route
+       * caefer: implemented seekable stream_read() for remote sources (with help from Jan Schumann)
+       * caefer: added tests to ensure seeking/telling is working on remote sources.
+      </notes>
+    </release>
+    <release>
+      <version>
         <release>1.0.2</release>
         <api>1.0.0</api>
       </version>
