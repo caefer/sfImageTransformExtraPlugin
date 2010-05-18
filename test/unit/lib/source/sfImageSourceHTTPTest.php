@@ -73,6 +73,22 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
     fclose($fh);
   }
 
+  public function testStream_seek()
+  {
+    $fh = fopen($this->testSourceUri, 'r');
+    $this->assertEquals(0, fseek($fh, 1));
+    $this->assertEquals(1, ftell($fh));
+    fseek($fh, 1, SEEK_CUR);
+    $this->assertEquals(2, ftell($fh));
+    fseek($fh, 1, SEEK_SET);
+    $this->assertEquals(1, ftell($fh));
+    fseek($fh, -1, SEEK_END);
+    $this->assertEquals(filesize($this->testSourceUri)-1, ftell($fh));
+    rewind($fh);
+    $this->assertEquals(0, ftell($fh));
+    fclose($fh);
+  }
+
   public function testStream_stat()
   {
     $fh = fopen($this->testSourceUri, 'r');

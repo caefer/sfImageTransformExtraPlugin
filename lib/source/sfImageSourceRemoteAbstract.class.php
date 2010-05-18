@@ -26,6 +26,60 @@
  */
 abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract implements sfImageSourceInterface
 {
+  /**
+   * @var int $offset current file pointer position
+   */
+  protected $offset = 0;
+
+  /**
+   * Tests for end-of-file on a file pointer
+   *
+   * @return bool
+   */
+  public function stream_eof()
+  {
+    $headers = get_headers($this->filename, 1);
+    return $this->offset >= $headers['Content-Length'];
+  }
+
+  /**
+   * Read from stream
+   *
+   * @param int $count
+   * @return string
+   */
+  public function stream_read($count)
+  {
+    $content = stream_get_contents($this->resource, $count);
+    $this->offset += strlen($content);
+    return $content;
+  }
+
+  /**
+   * Seeks to specific location in a stream
+   *
+   * @param int  $offset
+   * @param int  $whence
+   * @return bool
+   */
+  public function stream_seek($offset, $whence = SEEK_SET)
+  {
+    switch($whence)
+    {
+      case SEEK_SET:
+        $this->offset = $offset;
+        break;
+      case SEEK_CUR:
+        $this->offset += $offset;
+        break;
+      case SEEK_END:
+        $headers = get_headers($this->filename, 1);
+        $this->offset = $headers['Content-Length'] + $offset;
+        break;
+    }
+    return true;
+  }
+
   /** 
    * Retrieve information about a file resource
    *
@@ -38,6 +92,16 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
   public function stream_stat()
   {
     return array();
+  }
+
+  /** 
+   * Retrieve the current position of a stream
+   * 
+   * @return int 
+   */ 
+  public function stream_tell()
+  {
+    return $this->offset;
   }
 
   /**
@@ -54,8 +118,10 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
    */
   public function url_stat($path , $flags)
   {
+    $headers = get_headers($this->translatePathToFilename($path), 1);
     return array(
-      'mode' => 0555
+      'mode' => 0555,
+      'size' => $headers['Content-Length']
     );
   }
 }
