@@ -1,7 +1,8 @@
 all:
   .settings:
     thumbnail_cache:
-      class: sfRawFileCache
+      class:                        sfRawFileCache
       param:
         automatic_cleaning_factor:  0
         cache_dir:                  %SF_WEB_DIR%
+      namespace_callback:           'sfRawFileCache::setCacheKey'

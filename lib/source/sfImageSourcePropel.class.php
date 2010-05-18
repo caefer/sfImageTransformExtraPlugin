@@ -61,8 +61,8 @@ class sfImageSourcePropel extends sfImageSourceLocalAbstract implements sfImageS
     {
       throw new sfError404Exception('Could not find "'.$url['host'].'" #'.$url['fragment'].'!');
     }
-    $attribute = ltrim($url['path'], '/');
-    $files = sfFinder::type('file')->name($obj->$attribute.'*')->in(sfConfig::get('sf_upload_dir'));
+    $attributeAccessor = 'get'.ucfirst(ltrim($url['path'], '/'));
+    $files = sfFinder::type('file')->name($obj->$attributeAccessor().'*')->in(sfConfig::get('sf_upload_dir'));
     return $files[0];
   }
 }

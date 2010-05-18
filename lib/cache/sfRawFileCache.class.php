@@ -157,13 +157,13 @@ class sfRawFileCache extends sfFileCache
     return 0;
   }
 
- /**
-  * Converts a cache key to a full path.
-  *
-  * @param string $key The cache key
-  *
-  * @return string The full path to the cache file
-  */
+  /**
+   * Converts a cache key to a full path.
+   *
+   * @param string $key The cache key
+   *
+   * @return string The full path to the cache file
+   */
   protected function getFilePath($key)
   {
     return $this->getOption('cache_dir').DIRECTORY_SEPARATOR.str_replace(sfCache::SEPARATOR, DIRECTORY_SEPARATOR, $key);

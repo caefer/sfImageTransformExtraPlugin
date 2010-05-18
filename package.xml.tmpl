@@ -51,6 +51,25 @@ Instead of changing your business logic when the design requires new formats you
   <changelog>
     <release>
       <version>
+        <release>1.0.2</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-05-07</date>
+      <license>MIT</license>
+      <notes>
+       * caefer: added a way to add custom resource locations for overlays and alpha masks" config/app.yml lib/transforms/sfImageTransformManager.class.php
+       * caefer: added a setting to re-configure the cache_namespace_callable
+       * caefer: bugfix: in Propel you have to use accessors to get attributes. fixed in sfImageSourcePropel
+       * caefer: sfImageSourceRemoteAbstract now returns fix inode protection node (readable)
+       </notes>
+    </release>
+    <release>
+      <version>
         <release>1.0.1</release>
         <api>1.0.0</api>
       </version>

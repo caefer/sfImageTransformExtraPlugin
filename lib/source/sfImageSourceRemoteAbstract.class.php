@@ -46,6 +46,7 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
    * ATTENTION! stat() does not work with http streams but is only needed because
    * it is called internally by file_exists() which is used by sfImage. Returning
    * an empty array is sufficient to this call.
+   * This one is also called by is_readable() which checks the inode protection mode.
    *
    * @param string $path
    * @param int $flags
@@ -53,6 +54,8 @@ abstract class sfImageSourceRemoteAbstract extends sfImageSourceLocalAbstract im
    */
   public function url_stat($path , $flags)
   {
-    return array();
+    return array(
+      'mode' => 0555
+    );
   }
 }

@@ -143,14 +143,20 @@ class sfImageTransformManager
       $pluginDirs = ProjectConfiguration::getActive()->getAllPluginPaths();
       $pluginDir = $pluginDirs['sfImageTransformExtraPlugin'];
 
+      $resourcePaths = array_merge(
+        sfConfig::get('app_sfImageTransformExtraPlugin_additional_resource_paths', array()),
+        array(
+          sfConfig::get('sf_data_dir') . '/resources/',
+          $pluginDir . '/data/example-resources/'
+        )
+      );
+
+      array_walk($resourcePaths, array($this, 'extendResourcePaths'), $filepath);
+
       $files = sfFinder::type('file')
         ->name($filename)
         ->maxdepth(1)
-        ->in(array(
-          sfConfig::get('sf_data_dir') . '/resources/'.$filepath,
-          $pluginDir . '/data/example-resources/'.$filepath,
-        )
-      );
+        ->in($resourcePaths);
 
       if(0 == count($files))
       {
@@ -161,5 +167,20 @@ class sfImageTransformManager
     }
 
     return $parameter;
+  }
+
+  /**
+   * Extending known resource paths (from app.yml) with current filepath
+   * Used as callback for array_walk in sfImageTransformManager::autoboxSfImage()
+   * @see array_merge()
+   *
+   * @param  string &$path         One of the resource path as configured in app.yml
+   * @param  string $index         Current key/index
+   * @param  string $pathExtension The current filepath to look up
+   * @return string
+   */
+  public function extendResourcePaths(&$path, $index, $pathExtension)
+  {
+    $path = $path.'/'.$pathExtension;
   }
 }
