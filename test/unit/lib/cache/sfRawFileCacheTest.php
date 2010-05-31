@@ -115,10 +115,10 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
 
   public function testSetCacheKey()
   {
-    $internalUri = 'sfImageTransformator/index?type=TestFile&format=original&path=00/00/00&slug=barfoo&id=1&sf_format=jpg';
+    $internalUri = 'sfImageTransformator/index?format=original&filepath=TestFile&sf_format=jpg';
     $viewCacheManager = new sfViewCacheManager(sfContext::getInstance(), new sfNoCache());
     $path = sfRawFileCache::setCacheKey($internalUri, '', '', '', $viewCacheManager);
-    $this->assertContains('/thumbnails/TestFile/original/00/00/00/barfoo-1.jpg', $path);
+    $this->assertContains('/thumbnails/original/TestFile.jpg', $path);
   }
 
   private function getCache($dir)
@@ -131,9 +131,84 @@ class sfRawFileCacheTest extends PHPUnit_Framework_TestCase
 
   private function getRoute($routeName)
   {
-    $routing = sfContext::getInstance()->getRouting();
-    $route = $routing->getRoutes();
-    return $route[$routeName];
+    switch($routeName)
+    {
+      case 'sf_image_doctrine':
+        return new sfImageTransformRoute(
+          '/thumbnails/:type/:format/:path/:slug-:id.:sf_format',
+          array(
+            'module' => 'sfImageTransformator',
+            'action' => 'index',
+            'attribute' => 'file'
+          ),
+          array(
+            'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
+            'path' => '[\\w/]+',
+            'slug' => '[\\w_-]+',
+            'id' => '\d+(?:,\d+)?',
+            'sf_format' => 'gif|png|jpg',
+            'sf_method' => array('get')
+          ),
+          array(
+            'image_source' => 'Doctrine',
+            'segment_separators' => array('/', '.', '-')
+          )
+        );
+      case 'sf_image_mock':
+        return new sfImageTransformRoute(
+          '/thumbnails/:format.:sf_format',
+          array(
+            'module' => 'sfImageTransformator',
+            'action' => 'index'
+          ),
+          array(
+            'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
+            'sf_format' => 'gif|png|jpg',
+            'sf_method' => array('get')
+          ),
+          array(
+            'image_source' => 'Mock'
+          )
+        );
+      case 'sf_image_file':
+        return new sfImageTransformRoute(
+          '/thumbnails/:format/:filepath.:sf_format',
+          array(
+            'module' => 'sfImageTransformator',
+            'action' => 'index'
+          ),
+          array(
+            'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
+            'filepath' => '[\w/.]+',
+            'sf_format' => 'gif|png|jpg',
+            'sf_method' => array('get')
+          ),
+          array(
+            'image_source' => 'File'
+          )
+        );
+      case 'sf_image_http':
+        return new sfImageTransformRoute(
+          '/thumbnails/:site/:format/:filepath.:sf_format',
+          array(
+            'module' => 'sfImageTransformator',
+            'action' => 'index',
+            'protocol' => 'http',
+            'domain' => 'localhost'
+          ),
+          array(
+            'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
+            'filepath' => '[\w/.]+',
+            'protocol' => 'http|https',
+            'domain' => '[\w-_.]+',
+            'sf_format' => 'gif|png|jpg',
+            'sf_method' => array('get')
+          ),
+          array(
+            'image_source' => 'Doctrine'
+          )
+        );
+    }
   }
 
   protected function setUp()

@@ -31,11 +31,11 @@ class sfImageTransformRouteTest extends PHPUnit_Framework_TestCase
 {
   public function testGenerate()
   {
-    $this->assertEquals('/thumbnails/Model/default/0.jpg', $this->route->generate(
+    $this->assertEquals('/thumbnails/TestRecord/default/1.jpg', $this->route->generate(
       array(
         'format' => 'default',
-        'type' => 'Model',
-        'id' => '0',
+        'type' => 'TestRecord',
+        'id' => '1',
         'sf_format' => 'jpg'
       )
     ));
@@ -52,6 +52,34 @@ class sfImageTransformRouteTest extends PHPUnit_Framework_TestCase
     ));
   }
 
+  /**
+   * @expectedException sfImageTransformRouteException
+   */
+  public function testGetImageSourceStreamWrapperNotExists()
+  {
+    $route = new sfImageTransformRoute(
+      '/thumbnails/:type/:format/:id.:sf_format',
+      array(
+        'module' => 'sfImageTransformator',
+        'action' => 'index'
+      ),
+      array(
+        'format' => '[\\w_-]+(?:,[\\w_-]+(?:,[\\w_-]+)?)?',
+        'path' => '[\\w/]+',
+        'slug' => '[\\w_-]+',
+        'id' => '\d+(?:,\d+)?',
+        'sf_format' => 'gif|png|jpg',
+        'sf_method' => array('get')
+      ),
+      array(
+        'image_source' => 'DoesNotExist',
+        'segment_separators' => array('/', '.', '-')
+      )
+    );
+
+    $route->getImageSourceStreamWrapper();
+  }
+
   public function testGetImageSourceStreamWrapper()
   {
     $this->assertEquals('sfImageSourceDoctrine', $this->route->getImageSourceStreamWrapper());
@@ -65,6 +93,9 @@ class sfImageTransformRouteTest extends PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
+    $this->dbh = new Doctrine_Adapter_Mock('mysql');
+    $this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh, 'mysql', true);
+
     $this->route = new sfImageTransformRoute(
       '/thumbnails/:type/:format/:id.:sf_format',
       array(

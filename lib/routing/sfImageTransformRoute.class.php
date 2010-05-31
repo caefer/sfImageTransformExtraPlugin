@@ -133,7 +133,12 @@ class sfImageTransformRoute extends sfRequestRoute
    */
   public function getImageSourceStreamWrapper()
   {
-    return 'sfImageSource'.$this->options['image_source'];
+    $className = 'sfImageSource'.$this->options['image_source'];
+    if(!class_exists($className))
+    {
+      throw new sfImageTransformRouteException('Image source class "'.$className.'" does not exist!');
+    }
+    return $className;
   }
 
   /**

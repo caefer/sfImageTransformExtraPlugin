@@ -1,33 +1,4 @@
-sf_image_doctrine:
-  class: sfImageTransformRoute
-  url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
-  param: { module: sfImageTransformator, action: index, attribute: file }
-  requirements:
-    format:    '[\w_-]+'
-    path:      '[\w/]+'
-    slug:      '[\w_-]+'
-    id:        '\d+(?:,\d+)?'
-    sf_format: 'gif|png|jpg'
-    sf_method: [ get ]
-  options:
-    image_source: Doctrine
-    segment_separators: [ '/', '.', '-' ]
-
-sf_image_http:
-  class: sfImageTransformRoute
-  url:   /thumbnails/site/:format/:filepath.:sf_format
-  param: { module: sfImageTransformator, action: index, protocol: http, domain: localhost }
-  requirements:
-    format:    '[\w_-]+'
-    protocol:  'http|https'
-    domain:    '[\w-_.]+'
-    filepath:  '[\w-_/.]+'
-    sf_format: 'gif|png|jpg'
-    sf_method: [ get ]
-  options:
-    image_source: HTTP
-
-sf_image_file:
+sf_image:
   class: sfImageTransformRoute
   url:   /thumbnails/:format/:filepath.:sf_format
   param: { module: sfImageTransformator, action: index }
@@ -38,14 +9,47 @@ sf_image_file:
     sf_method: [ get ]
   options:
     image_source: File
+    image_location: %SF_ROOT_DIR%
 
-sf_image_mock:
-  class: sfImageTransformRoute
-  url:   /thumbnails/:format.:sf_format
-  param: { module: sfImageTransformator, action: index }
-  requirements:
-    format:    '[\w_-]+'
-    sf_format: 'gif|png|jpg'
-    sf_method: [ get ]
-  options:
-    image_source: Mock
+## ROUTE FOR DOCTRINE SOURCES
+# sf_image:
+#   class: sfImageTransformRoute
+#   url:   /thumbnails/:type/:format/:path/:slug-:id.:sf_format
+#   param: { module: sfImageTransformator, action: index, attribute: file }
+#   requirements:
+#     format:    '[\w_-]+'
+#     path:      '[\w/]+'
+#     slug:      '[\w_-]+'
+#     id:        '\d+(?:,\d+)?'
+#     sf_format: 'gif|png|jpg'
+#     sf_method: [ get ]
+#   options:
+#     image_source: Doctrine
+#     segment_separators: [ '/', '.', '-' ]
+# 
+## ROUTE FOR HTTP SOURCES
+# sf_image:
+#   class: sfImageTransformRoute
+#   url:   /thumbnails/site/:format/:filepath.:sf_format
+#   param: { module: sfImageTransformator, action: index, protocol: http, domain: localhost }
+#   requirements:
+#     format:    '[\w_-]+'
+#     protocol:  'http|https'
+#     domain:    '[\w-_.]+'
+#     filepath:  '[\w-_/.]+'
+#     sf_format: 'gif|png|jpg'
+#     sf_method: [ get ]
+#   options:
+#     image_source: HTTP
+# 
+## ROUTE FOR MOCK SOURCES
+# sf_image:
+#   class: sfImageTransformRoute
+#   url:   /thumbnails/:format.:sf_format
+#   param: { module: sfImageTransformator, action: index }
+#   requirements:
+#     format:    '[\w_-]+'
+#     sf_format: 'gif|png|jpg'
+#     sf_method: [ get ]
+#   options:
+#     image_source: Mock
