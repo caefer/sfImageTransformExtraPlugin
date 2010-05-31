@@ -51,9 +51,10 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
 
     if(sfConfig::get('sf_cache') && 'sfImageTransformator' == $params['module'] && 'index' == $params['action'])
     {
-      if(false !== sfConfig::get('sf_thumbnail_cache_namespace_callback', false))
+      $config = sfConfig::get('sf_thumbnail_cache');
+      if(array_key_exists('namespace_callback', $config))
       {
-        sfConfig::set('sf_cache_namespace_callable', sfConfig::get('sf_thumbnail_cache_namespace_callback'));
+        sfConfig::set('sf_cache_namespace_callable', $config['namespace_callback']);
       }
 
       $viewCacheManager = sfContext::getInstance(sfConfig::get('sf_app'))->getViewCacheManager();
