@@ -67,7 +67,6 @@ class sfImageSourceDoctrine extends sfImageSourceLocalAbstract implements sfImag
     }
     $attribute = ltrim($url['path'], '/');
     $filepath = sfConfig::get('sf_upload_dir').'/'.strtolower(get_class($obj)).'/'.$obj->$attribute;
-    $files = sfFinder::type('file')->name(basename($filepath))->in(dirname($filepath));
-    return $files[0];
+    return $filepath;
   }
 }
