@@ -1,0 +1,3 @@
+[submodule "lib/vendor/StreamHitching"]
+	path = lib/vendor/StreamHitching
+	url = git://github.com/caefer/StreamHitching.git
