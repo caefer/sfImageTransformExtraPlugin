@@ -36,6 +36,10 @@ EOF;
         'Please have a look at the above error messages and comments to correct this.',
       ), 'ERROR');
     }
+    else
+    {
+      $this->log('Everything seems to be alright. If it still does not work it\'s probably a permissions problem.')
+    }
   }
 
   private function checkIfNoScriptNameIsTrue($application)
