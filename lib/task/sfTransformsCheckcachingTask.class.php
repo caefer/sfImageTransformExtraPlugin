@@ -38,7 +38,7 @@ EOF;
     }
     else
     {
-      $this->log('Everything seems to be alright. If it still does not work it\'s probably a permissions problem.')
+      $this->log('Everything seems to be alright. If it still does not work it\'s probably a permissions problem.');
     }
   }
 
