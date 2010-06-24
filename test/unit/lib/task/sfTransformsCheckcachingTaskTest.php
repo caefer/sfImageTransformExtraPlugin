@@ -23,7 +23,7 @@ require_once 'PHPUnit/Framework.php';
  * @subpackage cache
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class sfImageTransformRemovalTaskTest extends PHPUnit_Framework_TestCase
+class sfTransformsCheckcachingTaskTest extends PHPUnit_Framework_TestCase
 {
   public function test__construct()
   {
