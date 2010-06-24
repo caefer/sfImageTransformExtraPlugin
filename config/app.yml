@@ -1,0 +1,12 @@
+# sfImageTransFormExtraPlugin will look up resource files such as overlays and alpha masks in
+# %SF_DATA_DIR%/resources/ and %SF_PLUGINS_DIR%/sfImageTransFormExtraPlugin/data/example-resources
+# by default. If you wish to extend this list you can use the following settings in you app.yml to
+# add more paths containing your resource files. These paths will have higher priority than the
+# default ones. Be aware that absolute paths need to be accessible by the web server.
+#
+#all:
+#  sfImageTransformExtraPlugin:
+#    additional_resource_paths:
+#      - %SF_PLUGINS_DIR%/yourResourcesPlugin/data/resources
+#      - /absolute/path/to/your/resources
+#
