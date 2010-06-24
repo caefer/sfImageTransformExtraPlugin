@@ -10,7 +10,7 @@
  * @package    sfImageTransformExtraPlugin
  * @subpackage task
  * @author     Christian Schaefer <schaefer.christian@guj.de>
- * @version    SVN: $Id: $
+ * @version    SVN: $Id: sfImageTransformRemovalTask.class.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
 /**

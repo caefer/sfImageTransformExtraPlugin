@@ -8,7 +8,7 @@
  *
  * @package    sfImageTransformExtraPlugin
  * @author     Christian Schaefer <caefer@ical.ly>
- * @version    SVN: $Id: sfRawFileCache.class.php 63 2010-03-09 04:34:28Z caefer $
+ * @version    SVN: $Id: sfImageSourceRemoteAbstract.class.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
 /**
