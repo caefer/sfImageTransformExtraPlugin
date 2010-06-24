@@ -36,6 +36,7 @@ EOF;
   protected function execute($arguments = array(), $options = array())
   {
     $this->log($this->briefDescription);
+    $this->checkIfThumbnailModuleIsEnabled($arguments['application']);
     $this->checkIfNoScriptNameIsTrue($arguments['application']);
     $this->checkIfCachingIsActivated($arguments['application']);
     $absolutePathToThumbnailCacheDir = $this->checkForRoute($options['route-name']);
@@ -51,6 +52,24 @@ EOF;
     else
     {
       $this->log('Everything seems to be alright. If it still does not work it\'s probably a permissions problem.');
+    }
+  }
+
+  private function checkIfThumbnailModuleIsEnabled($application)
+  {
+    if(in_array('sfImageTransformator', sfConfig::get('sf_enabled_modules', array())))
+    {
+      $this->logSection('module', 'The module "sfImageTransformator" is enabled.', null, 'INFO');
+    }
+    else
+    {
+      $this->logSection('module', 'The module "sfImageTransformator" is not enabled in apps/'.$application.'/config/settings.yml', null, 'ERROR');
+      $this->logBlock(array(
+        'You must add the "sfImageTransformator" module to the \'enabled_modules\' setting',
+        'in your applications settings.yml. Otherwise the application will not be able to',
+        'generate any images.'
+      ), 'COMMENT');
+      $this->error = true;
     }
   }
 
