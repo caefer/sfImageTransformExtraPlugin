@@ -7,9 +7,9 @@ all:
         quality:                    25
         mime_type:                  image/gif
         transformations:
-          - { adapter: GD, transformation: create, param: { x: 250, y: 200 } }}
-          - { adapter: GD, transformation: text,   param: { text: '404', x: 10, y:  50, size: 72, font: accid___, color: '#FF0000', angle: 0 } }}
-          - { adapter: GD, transformation: text,   param: { text: 'Image could not be found', x: 10, y:  120, size: 12, font: accid___, color: '#FF0000', angle: 0 } }}
+          - { adapter: GD, transformation: create, param: { x: 250, y: 200 } }
+          - { adapter: GD, transformation: text,   param: { text: '404', x: 10, y:  50, size: 72, font: accid___, color: '#FF0000', angle: 0 } }
+          - { adapter: GD, transformation: text,   param: { text: 'Image could not be found', x: 10, y:  120, size: 12, font: accid___, color: '#FF0000', angle: 0 } }
 # -------------------------------------------------------------------------------
 # --- // original image. no transformation
       original:
