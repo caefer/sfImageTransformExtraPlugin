@@ -6,26 +6,26 @@
         quality:                25
         mime_type:              image/gif
         transformations:
-          - { adapter: GD, transformation: create, param: { x: 250, y: 200 } }}
-          - { adapter: GD, transformation: text,   param: { text: '404', x: 10, y:  50, size: 72, font: accid___, color: '#FF0000', angle: 0 } }}
-          - { adapter: GD, transformation: text,   param: { text: 'Image could not be found', x: 10, y:  120, size: 12, font: accid___, color: '#FF0000', angle: 0 } }}
+          - { adapter: GD, transformation: create, param: { x: 250, y: 200 }}
+          - { adapter: GD, transformation: text,   param: { text: '404', x: 10, y:  50, size: 72, font: accid___, color: '#FF0000', angle: 0 }}
+          - { adapter: GD, transformation: text,   param: { text: 'Image could not be found', x: 10, y:  120, size: 12, font: accid___, color: '#FF0000', angle: 0 }}
       demo_alpha_mask_frame:
         quality:                75
         mime_type:              image/png
         transformations:
-          - { adapter: GD, transformation: resize,    param: { width: 300, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,    param: { width: 300, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: alphaMask, param: { mask: sfImage|masks/frame.gif }}
       demo_alpha_mask_pattern:
         quality:                75
         mime_type:              image/png
         transformations:
-          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: alphaMask, param: { mask: sfImage|masks/pattern.gif }}
       demo_rounded_corners:
         quality:                75
         mime_type:              image/gif
         transformations:
-          - { adapter: GD, transformation: resize,         param: { width: 300, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,         param: { width: 300, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: roundedCorners, param: { radius: 80 }}
       demo_thumbnail_fit:
         quality:                75
@@ -46,42 +46,42 @@
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
       demo_border:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: border, param: { thickness: 4, color: '#0000FF' }}
       demo_arc:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: arc,    param: { x: 100, y: 100, width: 50, height: 30, start_angle: 0, end_angle: 270, thickness: 2, color: '#00FF00', fill: '#FFFF00', style: off }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
+          - { adapter: GD, transformation: arc,    param: { x: 100, y: 100, width: 50, height: 30, start_angle: 0, end_angle: 270, thickness: 2, color: '#00FF00', fill: '#FFFF00', style: ~ }}
       demo_brightness:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: brightness, param: { brightness: 50 }}
       demo_colorize:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: colorize, param: { red: 255, green: 0, blue: 0, alpha: 50 }}
       demo_contrast_max:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: contrast, param: { contrast: -80 }}
       demo_contrast_min:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: contrast, param: { contrast: 50 }}
       demo_crop:
         quality:                75
@@ -92,109 +92,109 @@
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: edgeDetect, param: {}}
       demo_ellipse:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: ellipse, param: { x: 120, y: 120, width: 100, height: 40, thickness: 3, color: '#00FF00', fill: off, style: off }}
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: true, proportional: true }}
+          - { adapter: GD, transformation: ellipse, param: { x: 120, y: 120, width: 100, height: 40, thickness: 3, color: '#00FF00', fill: ~, style: ~ }}
       demo_emboss:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: emboss, param: {}}
       demo_fill:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: fill,   param: { x: 20, y: 20, fill: '#00FFFF' }}
       demo_flip:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: flip,   param: {}}
       demo_gamma:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: gamma,  param: { input_gamma: 1.0, output_gamma: 1.6 }}
       demo_gaussianBlur:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,       param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,       param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: gaussianBlur, param: {}}
       demo_greyscale:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: greyscale, param: {}}
       demo_line:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: line,   param: { x1: 20, y1: 30, x2: 180, y2: 120, thickness: 8, color: '#FF0000', style: off }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
+          - { adapter: GD, transformation: line,   param: { x1: 20, y1: 30, x2: 180, y2: 120, thickness: 8, color: '#FF0000', style: ~ }}
       demo_mirror:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: mirror, param: {}}
       demo_negate:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: negate, param: {}}
       demo_noise:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: noise,  param: { density: 40 }}
       demo_opacity:
         quality:                75
         mime_type:              image/png
         transformations:
-          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: opacity, param: { opacity: 25 }}
       demo_overlay:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: overlay, param: { overlay: sfImage|overlays/wlcp.png, position: top-right }}
       demo_pixelBlur:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: pixelBlur, param: { blur: 3 }}
       demo_pixelize:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,   param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: pixelize, param: { size: 10 }}
       demo_rectangle:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: on, proportional: on }}
-          - { adapter: GD, transformation: rectangle, param: { x1: 20, y1: 30, x2: 130, y2: 180, thickness: 8, color: '#FF00FF', fill: off, style: off }}
+          - { adapter: GD, transformation: resize,    param: { width: 250, height: 200, inflate: true, proportional: true }}
+          - { adapter: GD, transformation: rectangle, param: { x1: 20, y1: 30, x2: 130, y2: 180, thickness: 8, color: '#FF00FF', fill: ~, style: ~ }}
       demo_reflection:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,     param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: reflection, param: { reflection_height: 80, start_transparency: 20 }}
       demo_resizeSimple:
         quality:                75
@@ -205,7 +205,7 @@
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 700, height: 600, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 700, height: 600, inflate: true, proportional: true }}
           - { adapter: GD, transformation: rotate, param: { angle: 50, background: '#00FF00' }}
           - { adapter: GD, transformation: crop,   param: { left: 300, top: 300, width: 250, height: 200 }}
       demo_scale:
@@ -217,35 +217,35 @@
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: scatter, param: { scatter: 4 }}
       demo_selectiveBlur:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,        param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,        param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: selectiveBlur, param: {}}
       demo_sketchy:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,  param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: sketchy, param: {}}
       demo_smooth:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: smooth, param: { smoothness: 2 }}
       demo_text:
         quality:                75
         mime_type:              image/jpg
         transformations:
-          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize, param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: text,   param: { text: 'Hello World!', x: 10, y: 140, size: 24, font: accid___, color: '#FFFFFF', angle: 0 }}
       demo_transparency:
         quality:                75
         mime_type:              image/gif
         transformations:
-          - { adapter: GD, transformation: resize,       param: { width: 250, height: 200, inflate: on, proportional: on }}
+          - { adapter: GD, transformation: resize,       param: { width: 250, height: 200, inflate: true, proportional: true }}
           - { adapter: GD, transformation: transparency, param: { color: '#000000' }}

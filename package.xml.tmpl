@@ -37,18 +37,158 @@ Instead of changing your business logic when the design requires new formats you
         <name>symfony</name>
         <channel>pear.symfony-project.com</channel>
         <min>1.4.0</min>
-        <max>1.4.4</max>
+        <max>1.5.0</max>
       </package>
       <package>
         <name>sfImageTransformPlugin</name>
-        <channel>plugins.symfony-project.org</channel>
+        <channel>pear.symfony-project.com</channel>
         <min>1.3.0</min>
-        <max>1.3.2</max>
+        <max>1.5.0</max>
       </package>
     </required>
   </dependencies>
   <phprelease></phprelease>
   <changelog>
+    <release>
+      <version>
+        <release>1.0.9</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-07-22</date>
+      <license>MIT</license>
+      <notes>
+* this time I hope it's for real. symfony pear channel is using the .com domain not the .org..
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.8</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-07-22</date>
+      <license>MIT</license>
+      <notes>
+* still fixing the dependencies. just found out that apparently the max version is exclusive..
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.7</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-07-21</date>
+      <license>MIT</license>
+      <notes>
+* fixed a wrong dependency
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.6</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-07-21</date>
+      <license>MIT</license>
+      <notes>
+* fixed fill and style options from off to ~
+* fixed boolean parameters for resize options
+* fixed spare brackets
+* fixed spare brackets
+* fixed channel url for sfImageTransformPlugin
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.5</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-06-24</date>
+      <license>MIT</license>
+      <notes>
+* caefer: restructured README
+* caefer: added a task to check if everything is setup correctly for caching generated images
+
+`$ php symfony --color transforms:check-caching frontend`
+
+`Run this task to check if your settings allow the thumbnail caching to work properly.`
+
+`>> no script name sf_no_script_name is set to true.`
+
+`>> caching   sf_cache is set to true.`
+
+`>> route     'sf_image' exists.`
+
+`>> route     Route 'sf_image' points to '/thumbnails/in/some/deeper/path/'.`
+
+`>> route     The absolute path for this is '/path/to/your/project/web/thumbnails/in/some/deeper/path/'.`
+
+`>> cache dir Path '/thumbnails/in/some/deeper/path' does not exist. Let's move one level up.`
+
+`>> cache dir Path '/thumbnails/in/some/deeper' does not exist. Let's move one level up.`
+
+`>> cache dir Path '/thumbnails/in/some' does not exist. Let's move one level up.`
+
+`>> cache dir Path '/thumbnails/in' does not exist. Let's move one level up.`
+
+`>> cache dir Path '/path/to/your/project/sfiteptask/web/thumbnails' exists.`
+
+`>> cache dir Path '/path/to/your/project/sfiteptask/web/thumbnails' is a directory.`
+
+`>> cache dir Path '/path/to/your/project/sfiteptask/web/thumbnails' is writable.`
+
+`Please note that this check is testing priviledges for your current user account.`
+
+`If your web server is running from a different user account (as it should) the result could be different.`
+
+`Everything seems to be alright. If it still does not work it's probably a permissions problem.`
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.4</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-05-31</date>
+      <license>MIT</license>
+      <notes>
+       * caefer: bugfix: namespace_callable was incorrectly adressed and prevented caching 
+       * caefer: removed some obsolete but costly part of code
+       * caefer: corrected README about overlay and alphaMask transformation parameters
+       * caefer: removed all example routes and left only default @sf_image all others are commented
+       * caefer: added class check for sfImageSource classes as set on routes
+       * caefer: adapted tests
+      </notes>
+    </release>
     <release>
       <version>
         <release>1.0.3</release>

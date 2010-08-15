@@ -8,7 +8,7 @@
  *
  * @package    sfImageTransformExtraPluginUnitTests
  * @author     Christian Schaefer <caefer@ical.ly>
- * @version    SVN: $Id: sfImageTransformRemovalTaskTest.php 29957 2010-06-24 08:24:23Z caefer $
+ * @version    SVN: $Id: sfTransformsCheckcachingTaskTest.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
 /** central bootstrap for unit tests */
@@ -23,7 +23,7 @@ require_once 'PHPUnit/Framework.php';
  * @subpackage cache
  * @author     Christian Schaefer <caefer@ical.ly>
  */
-class sfImageTransformRemovalTaskTest extends PHPUnit_Framework_TestCase
+class sfTransformsCheckcachingTaskTest extends PHPUnit_Framework_TestCase
 {
   public function test__construct()
   {

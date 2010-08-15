@@ -3,3 +3,7 @@
  * write more tests to produce image urls
  * implement configurable 404 fallback
  * reach 100% code coverage
+ * implement StreamHitching
+ * implement event based cache invalidation
+ * write unit test for check-caching task
+ * test ImageMagick adapter

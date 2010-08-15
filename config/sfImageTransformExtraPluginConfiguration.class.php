@@ -8,7 +8,7 @@
  *
  * @package    sfImageTransformExtraPlugin
  * @author     Christian Schaefer <caefer@ical.ly>
- * @version    SVN: $Id: sfRawFileCache.class.php 63 2010-03-09 04:34:28Z caefer $
+ * @version    SVN: $Id: sfImageTransformExtraPluginConfiguration.class.php 30357 2010-07-22 05:31:34Z caefer $
  */
 
 /**
@@ -17,11 +17,11 @@
  * @package     sfImageTransformExtraPlugin
  * @subpackage  config
  * @author      Christian Schaefer <caefer@ical.ly>
- * @version     SVN: $Id: sfImageTransformExtraPluginConfiguration.class.php 63 2010-03-09 04:34:28Z caefer $
+ * @version     SVN: $Id: sfImageTransformExtraPluginConfiguration.class.php 30357 2010-07-22 05:31:34Z caefer $
  */
 class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
 {
-  const VERSION = '1.0.3';
+  const VERSION = '1.0.9';
 
   /**
    * @see sfPluginConfiguration
