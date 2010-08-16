@@ -45,7 +45,7 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
    *
    * @return void
    */
-  static public function setViewCache(sfEvent $event)
+  public static function setViewCache(sfEvent $event)
   {
     $params = $event->getParameters();
 
@@ -72,29 +72,56 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
    *
    * @return sfCache
    */
-  static public function getCache()
+  public static function getCache()
   {
     extract(sfConfig::get('sf_thumbnail_cache'));
     return new $class($param);
   }
 
   /**
+   * Returns a route instance for a given route name.
+   *
+   * @static
+   * @param  string                 $routeName     Name of the route
+   * @param  sfProjectConfiguration $configuration Optionally pass a project configuration (i.e. when called from a task)
+   *
+   * @return sfRoute
+   */
+  public static function getRoute($routeName, sfProjectConfiguration $configuration = null)
+  {
+    if(is_null($configuration))
+    {
+      $configuration = sfProjectConfiguration::getActive();
+    }
+
+    $routing = sfRoutingConfigHandler::getConfiguration($configuration->getConfigPaths('config/routing.yml'));
+    if(!($route = $routing[$routeName]))
+    {
+      throw new sfException('Route "'.$routeName.'" could not be found!');
+    }
+    return new $route['class']($route['url'], $route['param'], $route['requirements'], $route['options']);
+  }
+
+  /**
    * Removes all generated thumbnails for given asset when a new contentAsset is published
    *
-   * @todo
    * @static
    * @param  sfEvent $event Event object as passed by symfony event system
    *
    * @return void
    */
-  static public function removeOldThumbnails(sfEvent $event)
+  public static function removeOldThumbnails(sfEvent $event)
   {
     $options = $event->getParameters();
-    $pattern = sprintf('*:%s:*:**:*-%s.*',
-      $options['type'],
-      $options['id']
-    );
+    if(!array_key_exists('route', $options))
+    {
+      throw new sfImageTransformExtraPluginConfigurationException('Coul\'d not read the "route" parameter from event!');
+    }
+    $routeName = $options['route'];
+    unset($options['route']);
 
-    self::getCache()->removePattern($pattern);
+    $route = self::getRoute($routeName);
+    $route->preassemblePattern($options);
+    self::getCache()->removePattern($route);
   }
 }
