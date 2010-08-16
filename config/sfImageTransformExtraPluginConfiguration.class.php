@@ -95,10 +95,11 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
     }
 
     $routing = sfRoutingConfigHandler::getConfiguration($configuration->getConfigPaths('config/routing.yml'));
-    if(!($route = $routing[$routeName]))
+    if(!array_key_exists($routeName, $routing))
     {
       throw new sfException('Route "'.$routeName.'" could not be found!');
     }
+    $route = $routing[$routeName];
     return new $route['class']($route['url'], $route['param'], $route['requirements'], $route['options']);
   }
 
