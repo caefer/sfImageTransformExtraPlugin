@@ -165,6 +165,7 @@ class sfImageTransformRoute extends sfRequestRoute
     {
       $this->pattern = str_replace(':'.$key, $value, $this->pattern);
     }
+    $this->pattern = str_replace('//', '/', $this->pattern);
 
     $this->compiled = false;
   }
