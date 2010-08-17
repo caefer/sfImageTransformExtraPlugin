@@ -11,11 +11,6 @@
  * @version    SVN: $Id: sfImageTransformRemovalTaskTest.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
-/** central bootstrap for unit tests */
-require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
-/** PHPUnit Framework */
-require_once 'PHPUnit/Framework.php';
-
 /**
  * PHPUnit test for sfRawFileCache
  *

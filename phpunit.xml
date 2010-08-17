@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <phpunit backupGlobals="false"
-         backupStaticAttributes="false"
+         backupStaticAttributes="true"
+         bootstrap="test/bootstrap/unit.php"
          colors="false"
          convertErrorsToExceptions="true"
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
-         processIsolation="false"
+         processIsolation="true"
          stopOnFailure="false"
-         syntaxCheck="false">
+         syntaxCheck="false"
+         testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader"
+         verbose="true"
+         strict="true">
+
+  <php>
+    <server name="SYMFONY" value="../symfony/"/>
+  </php>
 
   <testsuites>
     <testsuite name="sfImageTransformExtraPlugin Suite">
       <directory>./test/unit/</directory>
     </testsuite>
   </testsuites>
+
+  <logging>
+    <log type="coverage-html" target="build/coverage" title="sfImageTrasformExtraPlugin"
+         charset="UTF-8" yui="true" highlight="true"
+         lowUpperBound="35" highLowerBound="70"/>
+    <log type="coverage-clover" target="build/logs/clover.xml"/>
+    <log type="junit" target="build/logs/junit.xml" logIncompleteSkipped="false"/>
+  </logging>
 
   <filter>
     <whitelist addUncoveredFilesFromWhitelist="true">

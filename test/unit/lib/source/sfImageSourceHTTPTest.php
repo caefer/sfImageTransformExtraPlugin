@@ -11,11 +11,6 @@
  * @version    SVN: $Id: sfImageSourceHTTPTest.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
-/** central bootstrap for unit tests */
-require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
-/** PHPUnit Framework */
-require_once 'PHPUnit/Framework.php';
-
 /**
  * PHPUnit test for sfImageSourceHTTP transformation
  *
@@ -28,8 +23,8 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
   private $testSourceUri = null;
   private $testParameters = array(
     'protocol' => 'http',
-    'domain' => 'localhost',
-    'filepath' => 'test/image.gif'
+    'domain' => 'www.google.com',
+    'filepath' => 'intl/en_com/images/srpr/logo1w.png'
   );
 
   public function testStream_close()
@@ -106,12 +101,12 @@ class sfImageSourceHTTPTest extends PHPUnit_Framework_TestCase
    */
   public function testFailedBuildURIfromParameters()
   {
-    $this->assertEquals('sfImageSource://http/localhost#test/image.gif', sfImageSourceHTTP::buildURIfromParameters(array()));
+    $this->assertEquals('sfImageSource://http/www.google.com#intl/en_com/images/srpr/logo1w.png', sfImageSourceHTTP::buildURIfromParameters(array()));
   }
 
   public function testBuildURIfromParameters()
   {
-    $this->assertEquals('sfImageSource://http/localhost#test/image.gif', sfImageSourceHTTP::buildURIfromParameters($this->testParameters));
+    $this->assertEquals('sfImageSource://http/www.google.com#intl/en_com/images/srpr/logo1w.png', sfImageSourceHTTP::buildURIfromParameters($this->testParameters));
   }
 
   protected function setUp()

@@ -11,14 +11,10 @@
  * @version    SVN: $Id: sfImageTransformRouteTest.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
-/** central bootstrap for unit tests */
-require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
 /** Doctrine test record for mocking */
 require_once dirname(__FILE__).'/../../../fixtures/model/doctrine/TestRecord.php';
 /** Propel test record for mocking */
 require_once dirname(__FILE__).'/../../../fixtures/model/TestObject.php';
-/** PHPUnit Framework */
-require_once 'PHPUnit/Framework.php';
 
 /**
  * PHPUnit test for sfImageTransformRoute
@@ -44,7 +40,7 @@ class sfImageTransformRouteTest extends PHPUnit_Framework_TestCase
   public function testGenerateFromObject()
   {
     $obj = new TestRecord();
-    $this->assertEquals('/thumbnails/TestRecord/default/1.gif', $this->route->generate(
+    $this->assertEquals('/thumbnails/TestRecord/default/1.jpg', $this->route->generate(
       array(
         'format' => 'default',
         'sf_subject' => $obj
@@ -93,8 +89,10 @@ class sfImageTransformRouteTest extends PHPUnit_Framework_TestCase
 
   protected function setUp()
   {
-    $this->dbh = new Doctrine_Adapter_Mock('mysql');
-    $this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh, 'mysql', true);
+    //$this->dbh = new Doctrine_Adapter_Mock('oracle');
+    //$this->conn = Doctrine_Manager::getInstance()->openConnection($this->dbh, 'mysql', true);
+    $dbh = new Doctrine_Adapter_Mock('oracle');
+    $conn = Doctrine_Manager::getInstance()->openConnection($dbh);
 
     $this->route = new sfImageTransformRoute(
       '/thumbnails/:type/:format/:id.:sf_format',

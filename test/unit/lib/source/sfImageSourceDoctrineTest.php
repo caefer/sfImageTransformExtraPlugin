@@ -11,12 +11,8 @@
  * @version    SVN: $Id: sfImageSourceDoctrineTest.php 29957 2010-06-24 08:24:23Z caefer $
  */
 
-/** central bootstrap for unit tests */
-require_once dirname(__FILE__).'/../../../bootstrap/unit.php';
 /** Doctrine test record for mocking */
 require_once dirname(__FILE__).'/../../../fixtures/model/doctrine/TestRecord.php';
-/** PHPUnit Framework */
-require_once 'PHPUnit/Framework.php';
 
 /**
  * PHPUnit test for sfImageSourceDoctrine transformation
