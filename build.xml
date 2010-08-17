@@ -1,0 +1,88 @@
+<project name="sfImageTransformExtraPlugin" default="build" basedir=".">
+  <!-- checking out dependencies in parallel to sfImageTransformExtraPlugins sources -->
+  <target name="update">
+    <exec executable="svn">  
+      <arg line="checkout http://svn.symfony-project.org/branches/1.4/lib ../symfony"/>  
+    </exec>
+    <exec executable="svn">  
+      <arg line="checkout http://svn.symfony-project.org/plugins/sfImageTransformPlugin/trunk ../sfImageTransformPlugin"/>  
+    </exec>
+  </target>
+
+ <target name="clean">
+  <!-- Clean up -->
+  <delete dir="build"/>
+
+  <!-- Create build directories -->
+  <mkdir dir="${basedir}/build/api"/>
+  <mkdir dir="${basedir}/build/code-browser"/>
+  <mkdir dir="${basedir}/build/coverage"/>
+  <mkdir dir="${basedir}/build/logs"/>
+  <mkdir dir="${basedir}/build/pdepend"/>
+ </target>
+
+ <!-- Run unit tests and generate junit.xml and clover.xml -->
+ <target name="phpunit">
+  <exec executable="phpunit" failonerror="true"/>
+ </target>
+
+ <!-- Run pdepend, phpmd, phpcpd, and phpcs in parallel -->
+ <target name="parallelTasks">
+  <parallel>
+   <antcall target="pdepend"/>
+   <antcall target="phpmd"/>
+   <antcall target="phpcpd"/>
+   <antcall target="phpcs"/>
+   <antcall target="phpdoc"/>
+  </parallel>
+ </target>
+
+ <!-- Generate jdepend.xml and software metrics charts -->
+ <target name="pdepend">
+  <exec executable="pdepend">
+   <arg line="--jdepend-xml=${basedir}/build/logs/jdepend.xml ." />
+  </exec>
+ </target>
+
+ <!-- Generate pmd.xml -->
+ <target name="phpmd">
+  <exec executable="phpmd">
+   <arg line=". xml codesize,unusedcode
+              --reportfile ${basedir}/build/logs/pmd.xml" />
+  </exec>
+ </target>
+
+ <!-- Generate pmd-cpd.xml -->
+ <target name="phpcpd">
+  <exec executable="phpcpd">
+   <arg line="--log-pmd ${basedir}/build/logs/pmd-cpd.xml ." />
+  </exec>
+ </target>
+
+ <!-- Generate checkstyle.xml -->
+ <target name="phpcs">
+  <exec executable="phpcs" output="/dev/null">
+   <arg line="--report=checkstyle
+              --report-file=${basedir}/build/logs/checkstyle.xml
+              --standard=Sebastian
+              ." />
+  </exec>
+ </target>
+
+ <!-- Generate API documentation -->
+ <target name="phpdoc">
+  <exec executable="phpdoc">
+   <arg line="-d . -t build/api" />
+  </exec>
+ </target>
+
+ <target name="phpcb">
+  <exec executable="phpcb">
+   <arg line="--log    ${basedir}/build/logs
+              --source ${basedir}/
+              --output ${basedir}/build/code-browser" />
+  </exec>
+ </target>
+
+ <target name="build" depends="clean,update,parallelTasks,phpunit,phpcb"/>
+</project>
