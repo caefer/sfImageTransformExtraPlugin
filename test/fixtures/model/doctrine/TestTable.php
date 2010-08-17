@@ -20,8 +20,9 @@
  */
 class TestRecordTable extends Doctrine_Table
 {
-  public function find($id)
+  public function find()
   {
+    list($id) = func_get_args();
     switch ($id)
     {
       case 1:
