@@ -352,7 +352,7 @@ You will also most certainly need a parameter for the desired format.
 
     sf_image:
       class: sfImageTransformRoute
-      ulr:   /thumbnails/:format/:special.sf_format
+      url:   /thumbnails/:format/:special.sf_format
     param: { module: sfImageTransformator, action: index }
       requirements:
         format:    '[\w_-]+'
@@ -368,7 +368,7 @@ Once you defined the parameters you can implement the sfImageSource class by imp
 ``barfoo``.
 
 If the image source files are stored on the local filesystem accessible to the webserver your need to implement 
-``sfImageSourceLocal``. For all other locations please use ``sfImageSourceRemote`` as PHP functions like ``stat()`` only 
+``sfImageSourceLocalAbstract``. For all other locations please use ``sfImageSourceRemote`` as PHP functions like ``stat()`` only 
 work with local files and therefor need to be faked .
 
     class sfImageSourceSpecial extends sfImageSourceRemote implements sfImageSourceInterface
