@@ -51,6 +51,47 @@ Instead of changing your business logic when the design requires new formats you
   <changelog>
     <release>
       <version>
+        <release>1.0.11</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-07-22</date>
+      <license>MIT</license>
+      <notes>
+* adjusted to phpunit 5.3 where requiring phpunit and bootstrap script is no longer necessary
+* skipped config/removeOldThumbnails test as this was refactored and has yet to be done
+* http test resource is now google logo
+* strict compliance: adjusted find() method
+* added build.xml following s bergmanns example for CI
+* ignored build folder which is used by CI
+* changed remote resource from localhost to ever existing google logo
+      </notes>
+    </release>
+    <release>
+      <version>
+        <release>1.0.10</release>
+        <api>1.0.0</api>
+      </version>
+      <stability>
+        <release>stable</release>
+        <api>stable</api>
+      </stability>
+      <license uri="http://www.symfony-project.org/license">MIT license</license>
+      <date>2010-08-16</date>
+      <license>MIT</license>
+      <notes>
+* added maxdepth(0) to avoid matching files with the same name but in deeper path
+* ensured that there are no double slashes in the url
+* implemented event handling for removing thumbnails when 'sf_image_transform.changed_source' is notified
+* cleaned up code which could produce warnings
+      </notes>
+    </release>
+    <release>
+      <version>
         <release>1.0.9</release>
         <api>1.0.0</api>
       </version>
