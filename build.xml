@@ -72,7 +72,7 @@
  <!-- Generate API documentation -->
  <target name="phpdoc">
   <exec executable="phpdoc">
-   <arg line="-d . -t build/api" />
+   <arg line="-d . -t ${basedir}/../build/api" />
   </exec>
  </target>
 
