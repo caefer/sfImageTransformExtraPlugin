@@ -52,12 +52,38 @@ class sfImageTransformExtraPluginConfigurationTest extends PHPUnit_Framework_Tes
     $this->assertType('sfRawFileCache', sfImageTransformExtraPluginConfiguration::getCache());
   }
 
+  public function testGetRoute()
+  {
+    $route = sfImageTransformExtraPluginConfiguration::getRoute('sf_image');
+    $this->assertType('sfImageTransformRoute', $route);
+  }
+
+  public function testGetRouteWithProjectConfiguration()
+  {
+    $route = sfImageTransformExtraPluginConfiguration::getRoute('sf_image', $this->projectConfiguration);
+    $this->assertType('sfImageTransformRoute', $route);
+  }
+
+  /**
+   * @expectedException sfImageTransformExtraPluginConfigurationException
+   */
+  public function testGetRouteForNonExistentRoute()
+  {
+    $route = sfImageTransformExtraPluginConfiguration::getRoute('sf_image_does_not_exist');
+  }
+
   public function testRemoveOldThumbnails()
   {
-    $this->markTestIncomplete('todo..');
-    $event = new sfEvent($this, 'sf_image_transform.changed_source', array('type'=>'TestRecord', 'id' => 1));
+    $this->markTestSkipped('Can not be tested so far as static methods can not be mocked easily');
+  }
+
+  /**
+   * @expectedException sfImageTransformExtraPluginConfigurationException
+   */
+  public function testRemoveOldThumbnailsWithoutRoute()
+  {
+    $event = new sfEvent($this, 'sf_image_transform.changed_source', array());
     sfImageTransformExtraPluginConfiguration::removeOldThumbnails($event);
-    $this->assertTrue(true);
   }
 
   protected function setUp()
