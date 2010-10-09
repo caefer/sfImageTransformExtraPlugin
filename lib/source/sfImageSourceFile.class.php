@@ -32,7 +32,7 @@ class sfImageSourceFile extends sfImageSourceLocalAbstract implements sfImageSou
     // all params must be given
     if (!array_key_exists('filepath', $parameters))
     {
-      throw new InvalidArgumentException('The sf_image for image_source "Doctrine" route has some missing mandatory parameters (filepath).');
+      throw new InvalidArgumentException('The sf_image for image_source "File" route has some missing mandatory parameters (filepath).');
     }
 
     return sprintf('sfImageSource://file/%s', $parameters['filepath']);
