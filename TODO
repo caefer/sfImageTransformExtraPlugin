@@ -5,3 +5,4 @@
  * reach 100% code coverage
  * implement StreamHitching
  * test ImageMagick adapter
+ * make cache configuraable independantly
