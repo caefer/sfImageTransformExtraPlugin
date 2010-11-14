@@ -103,7 +103,9 @@ class sfRawFileCache extends sfFileCache
       $paths = array();
       foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'), RecursiveDirectoryIterator::FOLLOW_SYMLINKS)) as $path)
       {
-        if(false !== $pattern->matchesUrl('/'.str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path), array('method' => 'get')))
+        $url = '/'.str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path);
+        $url = strtr($url, '\\', '/'); // taking care of Windows directory separators. Thanks Mirko!
+        if(false !== $pattern->matchesUrl($url, array('method' => 'get')))
         {
           $paths[] = $path;
         }
