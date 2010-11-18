@@ -502,7 +502,19 @@ the ``default`` format (for example if you changed the mimetype of that particul
 
 ### <a name="auto-invalidation">Invalidating the cached images automatically</a>
 
-**t.b.d.**
+When uploading new images to your models replacing previous ones the previously generated thumbnails still persist so the user of your websites never actually gets to see your new image.
+
+Of course this is not the desired functionality but as there is no information stored anywhere about these thumbnails you can not know what files to delete.
+
+sfImageTransformExtraPlugin provides a symfony event for you to notify when you need to automatically wipe existing thumbnails from the filesystem.
+
+You can notify this event from anywhere like this.
+
+    new sfEvent(null, 'sf_image_transform.changed_source', array('sf_route' => 'sf_image', ...));
+
+The important thing is the parameters you pass. You are always required to provide a route name (`sf_route`) and as many of its route parameters as possible.
+
+For the route parameters the same logic applies as in the previous chapter about the symfony task.
 
 ## <a name="demo">Demonstration</a>
 
