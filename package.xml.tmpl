@@ -62,6 +62,22 @@ Instead of changing your business logic when the design requires new formats you
       <date>2010-07-22</date>
       <license>MIT</license>
       <notes>
+* added best practice advise to readme considering event deletion
+* implemented some micro optimisations that allow start traversing deeper in the tree if passed options provide
+* finally added a few lines about automatic removal of thumbnails
+* optimisation. refined basepath to recursively iterate based on the passed route tokens
+* small change to work on window systems as well (thanks Mirko)
+* added todo item
+* fixed Typo in Exception Message (thanks robo47)
+* added some more unit tests
+* Changed CodeSniffer standard from Sebastian to Symfony
+* fixed typo
+* path correction in build.xml
+* updated TODO
+* two small fixes for documentation: ulr is now URL and the right class name to extend (thank skoop)
+* located the build directory for CI artifacts outside 
+* updated package information 
+* added build.xml following s bergmanns example for CI 
 * adjusted to phpunit 5.3 where requiring phpunit and bootstrap script is no longer necessary
 * skipped config/removeOldThumbnails test as this was refactored and has yet to be done
 * http test resource is now google logo
