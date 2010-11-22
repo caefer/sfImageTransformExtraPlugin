@@ -40,41 +40,31 @@ class sfImageTransformRoute extends sfRequestRoute
    * @param  array Parameters as passed to the current route
    * @return array
    */
-  protected function convertObjectToArray($object)
+  protected function convertObjectToArray($parameters)
   {
     if (!$this->compiled)
     {
       $this->compile();
     }
 
-    if(!array_key_exists('sf_format', $object) && array_key_exists('format', $object))
-    {
-      $formats = sfConfig::get('thumbnailing_formats');
-      $object['sf_format'] = $this->get_suffix_for_mime_type($formats[$object['format']]['mime_type']);
-    }
+    $parameters = is_array($parameters) ? $parameters : array();
 
-    if (is_array($object))
+    if (isset($parameters['sf_subject']))
     {
-      if (!isset($object['sf_subject']))
+      $parameters = array_merge($parameters, $this->doConvertObjectToArray($parameters['sf_subject']));
+      if(array_key_exists('type', $this->variables))
       {
-        return $object;
+        $parameters['type'] = get_class($parameters['sf_subject'] instanceof sfOutputEscaper ? $parameters['sf_subject']->getRawValue() : $parameters['sf_subject']);
       }
-
-      $parameters = $object;
-      $object = $parameters['sf_subject'];
       unset($parameters['sf_subject']);
     }
-    else
-    {
-      $parameters = array();
-    }
 
-    if(array_key_exists('type', $this->variables))
-    {
-      $parameters['type'] = get_class($object instanceof sfOutputEscaper ? $object->getRawValue() : $object);
-    }
 
-    $parameters = array_merge($parameters, $this->doConvertObjectToArray($object));
+    if(!array_key_exists('sf_format', $parameters) && array_key_exists('format', $parameters))
+    {
+      $formats = sfConfig::get('thumbnailing_formats');
+      $parameters['sf_format'] = $this->get_suffix_for_mime_type($formats[$parameters['format']]['mime_type']);
+    }
 
     if(array_key_exists('path', $this->variables) && !array_key_exists('path', $parameters) && array_key_exists('id', $parameters))
     {
@@ -161,6 +151,8 @@ class sfImageTransformRoute extends sfRequestRoute
    */
   public function preassemblePattern($params = array())
   {
+    $params = $this->convertObjectToArray($params);
+
     foreach($params as $key => $value)
     {
       $this->pattern = str_replace(':'.$key, $value, $this->pattern);

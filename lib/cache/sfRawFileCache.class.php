@@ -93,64 +93,41 @@ class sfRawFileCache extends sfFileCache
     return true;
   }
 
+  protected function getBasepath(sfRoute $pattern)
+  {
+    $basepath = $this->getOption('cache_dir');
+    foreach($pattern->getTokens() as $token)
+    {
+      if('text' == $token[0] || 'separator' == $token[0])
+      {
+        $basepath .= $token[2];
+        continue;
+      }
+      break;
+    }
+    return $basepath;
+  }
+
   /**
    * @see sfCache
    */
   public function removePattern($pattern)
   {
-    if($pattern instanceof sfRoute)
+    if(!$pattern instanceof sfRoute)
     {
-      $basepath = $this->getOption('cache_dir');
-      foreach($pattern->getTokens() as $token)
-      {
-        if('text' == $token[0] || 'separator' == $token[0])
-        {
-          $basepath .= $token[2];
-        }
-        else
-        {
-          break;
-        }
-      }
-      $paths = array();
-      foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basepath, RecursiveDirectoryIterator::FOLLOW_SYMLINKS)) as $path)
-      {
-        $url = '/'.str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path);
-        $url = strtr($url, '\\', '/'); // taking care of Windows directory separators. Thanks Mirko!
-        if(false !== $pattern->matchesUrl($url, array('method' => 'get')))
-        {
-          $paths[] = $path;
-        }
-      }
-    }
-    else if (false !== strpos($pattern, '**'))
-    {
-      $pattern = str_replace(sfCache::SEPARATOR, DIRECTORY_SEPARATOR, $pattern);
-
-      $regexp = self::patternToRegexp($pattern);
-      $paths = array();
-      foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($this->getOption('cache_dir'))) as $path)
-      {
-        if (preg_match($regexp, str_replace($this->getOption('cache_dir').DIRECTORY_SEPARATOR, '', $path)))
-        {
-          $paths[] = $path;
-        }
-      }
-    }
-    else
-    {
-      $paths = glob($this->getOption('cache_dir').DIRECTORY_SEPARATOR.str_replace(sfCache::SEPARATOR, DIRECTORY_SEPARATOR, $pattern));
+      return parent::removePattern($pattern);
     }
 
-    foreach ($paths as $path)
+    $basepath = $this->getBasepath($pattern);
+
+    if(file_exists($basepath))
     {
-      if (is_dir($path))
+      $flags = defined('RecursiveDirectoryIterator::FOLLOW_SYMLINKS') ? RecursiveDirectoryIterator::FOLLOW_SYMLINKS : 0;
+
+      $iterator = new sfRouteFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basepath, $flags)), $pattern);
+      foreach ($iterator as $path)
       {
-        sfToolkit::clearDirectory($path);
-      }
-      else
-      {
-        @unlink($path);
+        @unlink($path->getRealpath());
       }
     }
   }

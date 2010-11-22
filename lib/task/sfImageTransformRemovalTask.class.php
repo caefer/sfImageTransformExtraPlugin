@@ -98,7 +98,6 @@ EOF;
       $cache = sfImageTransformExtraPluginConfiguration::getCache();
       $this->route->preassemblePattern($options);
       $cache->removePattern($this->route);
-      $this->logSection('files-', 'Generated images removed.');
     }
   }
 }
