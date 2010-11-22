@@ -173,6 +173,8 @@ class sfRawFileCache extends sfFileCache
    */
   static public function setCacheKey($internalUri, $hostName = '', $vary = '', $contextualPrefix = '', $sfViewCacheManager)
   {
-    return sfContext::getInstance()->getController()->genUrl($internalUri, false);
+    $context = sfContext::getInstance();
+    $internalUri = str_replace('sfImageTransformator/index', '@'.$context->getRouting()->getCurrentRouteName(), $internalUri);
+    return $context->getController()->genUrl($internalUri, false);
   }
 }
