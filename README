@@ -520,6 +520,8 @@ The deletion process will iterate over all files recursively and try to match th
 
 * __DON'T PASS WHOLE OBJECTS!__ As these can contain fields like slugs that might have changed themselves and could prevent matching of previously generated files. Do pass all route parameters separately.
 
+For further info see also [this blogpost](http://test.ical.ly/2010/08/17/how-to-automatically-and-manually-delete-thumbnails-in-symfony-with-sfimagetransformextraplugin/ "How to automatically and manually delete thumbnails in symfony with sfImageTransformExtraPlugin").
+
 ## <a name="demo">Demonstration</a>
 
 Here are a few examples to see what is possible.
