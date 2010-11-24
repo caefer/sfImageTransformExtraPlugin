@@ -98,6 +98,12 @@ EOF;
       $cache = sfImageTransformExtraPluginConfiguration::getCache();
       $this->route->preassemblePattern($options);
       $cache->removePattern($this->route);
+
+      $this->logSection('-files', 'Removed all matching files.');
+    }
+    else
+    {
+      $this->logSection('no action', 'No files were removed.');
     }
   }
 }
