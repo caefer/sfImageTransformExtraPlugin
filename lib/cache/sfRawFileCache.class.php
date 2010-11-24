@@ -93,19 +93,50 @@ class sfRawFileCache extends sfFileCache
     return true;
   }
 
-  protected function getBasepath(sfRoute $pattern)
+  protected function getPathEnd(sfRoute $pattern)
   {
-    $basepath = $this->getOption('cache_dir');
-    foreach($pattern->getTokens() as $token)
+    $path = '';
+    $tokens   = array_reverse($pattern->getTokens());
+    foreach($tokens as $token)
     {
       if('text' == $token[0] || 'separator' == $token[0])
       {
-        $basepath .= $token[2];
+        $path = $token[2].$path;
         continue;
       }
       break;
     }
-    return $basepath;
+    return $path;
+  }
+
+  protected function getPathStart(sfRoute $pattern)
+  {
+    $path = '';
+    foreach($pattern->getTokens() as $token)
+    {
+      if('text' == $token[0] || 'separator' == $token[0])
+      {
+        $path .= $token[2];
+        continue;
+      }
+      break;
+    }
+    return $path;
+  }
+
+  protected function getGlobPatterns(sfRoute $route)
+  {
+    $routeOptions = $route->getOptions();
+    $pathBase     = $this->getOption('cache_dir');
+    $pathStart    = $this->getPathStart($route);
+    $pathEnd      = $this->getPathEnd($route);
+    $depth        = substr_count($pathStart.'*'.$pathEnd, '/');
+    $paths        = array();
+    for($i=$depth; $i<=$routeOptions['max_folder_depth']; $i++)
+    {
+      $paths[] = $pathBase.$pathStart.str_repeat('*/', $i - $depth).'*'.$pathEnd;;
+    }
+    return $paths;
   }
 
   /**
@@ -118,16 +149,13 @@ class sfRawFileCache extends sfFileCache
       return parent::removePattern($pattern);
     }
 
-    $basepath = $this->getBasepath($pattern);
-
-    if(file_exists($basepath))
+    $paths = $this->getGlobPatterns($pattern);
+    foreach($paths as $path)
     {
-      $flags = defined('RecursiveDirectoryIterator::FOLLOW_SYMLINKS') ? RecursiveDirectoryIterator::FOLLOW_SYMLINKS : 0;
-
-      $iterator = new sfRouteFilterIterator(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($basepath, $flags)), $pattern);
-      foreach ($iterator as $path)
+      $files = glob($path, GLOB_BRACE);
+      foreach($files as $file)
       {
-        @unlink($path->getRealpath());
+        @unlink($file);
       }
     }
   }
