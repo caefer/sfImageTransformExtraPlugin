@@ -1,4 +1,5 @@
-﻿# Image manipulation made even easier - sfImageTransformExtraPlugin
+﻿
+# Image manipulation made even easier - sfImageTransformExtraPlugin
 
 ![sfImageTransformExtraPlugin](http://www.symfony-project.org/uploads/plugins/4366ffec3f32548c30e31094c3dcbcea.png)
 
@@ -16,6 +17,7 @@
     * [Verifying your cache settings](#verify-caching)
     * [Invalidating the cached images manually](#manual-invalidation)
     * [Invalidating the cached images automatically](#auto-invalidation)
+    * [Optimising the Invalidating process](#optimise-invalidation)
 *   [Demonstration](#demo)
 *   [How does it work?](#internals)
 
@@ -506,6 +508,8 @@ the ``default`` format (for example if you changed the mimetype of that particul
     $ ./symfony transforms:remove frontend sf_image_file --format=default --sf_format=jpg
     >> files-    Generated images removed.
 
+Please also take a look at the chapter [Optimising the Invalidating process](#optimise-invalidation).
+
 ### <a name="auto-invalidation">Invalidating the cached images automatically</a>
 
 When uploading new images to your models replacing previous ones the previously generated thumbnails still persist so the user of your websites never actually gets to see your new image.
@@ -528,13 +532,31 @@ The deletion process will iterate over all files recursively and try to match th
 
 For further info see also [this blogpost](http://test.ical.ly/2010/08/17/how-to-automatically-and-manually-delete-thumbnails-in-symfony-with-sfimagetransformextraplugin/ "How to automatically and manually delete thumbnails in symfony with sfImageTransformExtraPlugin").
 
+Please also take a look at the next chapter [Optimising the Invalidating process](#optimise-invalidation).
+
 ### <a name="optimise-invalidation">Optimising the Invalidating process</a>
 
 Since version 1.0.12 the invalidation process has greatly be improved and is now a lot faster which means more stability to content rich websites.
 
 This is achieved by the plugin assuming a default depth for the caching folder. This depth defaults to 10 but can be set per route in your `routing.yml`.
 
+    sf_image:
+      class: sfImageTransformRoute
+      url:   /thumbnails/:format/:filepath.:sf_format
+      param: { module: sfImageTransformator, action: index }
+      requirements:
+        format:    '[\w_-]+'
+        filepath:  '[\w/.]+'
+        sf_format: 'gif|png|jpg'
+        sf_method: [ get ]
+      options:
+        image_source: File
+        image_location: %SF_ROOT_DIR%
+        max_folder_depth: 10
 
+The above route definition does not define a definite depth for the thumbnail file as the `:filepath` parameter can include many folders. By setting `max_folder_depth` to 10 or another number the invalisation process can now use this information to search for generated thumbnail files rather than doing a recursive directory scan.
+
+As you know your application best this is a value that you can set yourself per route.
 
 ## <a name="demo">Demonstration</a>
 
