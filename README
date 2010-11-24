@@ -528,6 +528,14 @@ The deletion process will iterate over all files recursively and try to match th
 
 For further info see also [this blogpost](http://test.ical.ly/2010/08/17/how-to-automatically-and-manually-delete-thumbnails-in-symfony-with-sfimagetransformextraplugin/ "How to automatically and manually delete thumbnails in symfony with sfImageTransformExtraPlugin").
 
+### <a name="optimise-invalidation">Optimising the Invalidating process</a>
+
+Since version 1.0.12 the invalidation process has greatly be improved and is now a lot faster which means more stability to content rich websites.
+
+This is achieved by the plugin assuming a default depth for the caching folder. This depth defaults to 10 but can be set per route in your `routing.yml`.
+
+
+
 ## <a name="demo">Demonstration</a>
 
 Here are a few examples to see what is possible.
