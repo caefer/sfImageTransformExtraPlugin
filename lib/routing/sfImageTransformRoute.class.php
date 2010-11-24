@@ -21,6 +21,23 @@
 class sfImageTransformRoute extends sfRequestRoute
 {
   /**
+   * Constructor.
+   *
+   * Applies a default sf_method requirements of GET or HEAD.
+   *
+   * @see sfRoute
+   */
+  public function __construct($pattern, $defaults = array(), $requirements = array(), $options = array())
+  {
+    if (!isset($options['max_folder_depth']))
+    {
+      $options['max_folder_depth'] = 10;
+    }
+
+    parent::__construct($pattern, $defaults, $requirements, $options);
+  }
+
+  /**
    * Generates a URL from the given parameters.
    *
    * @param  mixed   $params    The parameter values
@@ -152,6 +169,16 @@ class sfImageTransformRoute extends sfRequestRoute
   public function preassemblePattern($params = array())
   {
     $params = $this->convertObjectToArray($params);
+
+    if(!$params['sf_format'])
+    {
+      $params['sf_format'] = '{jpg,gif,png}';
+    }
+
+    if(!$params['format'])
+    {
+      $params['format']    = '{'.implode(',', array_keys(sfConfig::get('thumbnailing_formats'))).'}';
+    }
 
     foreach($params as $key => $value)
     {
