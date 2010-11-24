@@ -123,6 +123,12 @@ The best way to learn how you configure your format transformations is to walk t
 
 Of course you can chain transformations. In fact most of the above thumbnails have two transformations applied one for resizing and another for the effect.
 
+All these format settings have to be made in a file called `thumbnailing.yml`. It starts like this.
+
+    all:
+      .settings:
+        formats:
+
 Let's see how it works and start with the original again. The format looks like this.
 
           star0:
