@@ -29,7 +29,7 @@ class sfImageTransformRemovalTask extends sfBaseTask
   protected function configure()
   {
     $this->addArgument('application', sfCommandArgument::REQUIRED, 'The application name');
-    $this->addArgument('route', sfCommandArgument::REQUIRED, 'The sf_image route that generated the image(s) you want to remove');
+    $this->addArgument('sf_route', sfCommandArgument::REQUIRED, 'The symfony route name that generated the image(s) you want to remove');
 
     $this->aliases          = array(
       'remove-thumbnails'
@@ -56,10 +56,10 @@ EOF;
   {
     $commandManager->process($options);
 
-    if(array_key_exists('application', $commandManager->getArgumentValues()) && array_key_exists('route', $commandManager->getArgumentValues()))
+    if(array_key_exists('application', $commandManager->getArgumentValues()) && array_key_exists('sf_route', $commandManager->getArgumentValues()))
     {
       $application = $commandManager->getArgumentValue('application');
-      $routeName = $commandManager->getArgumentValue('route');
+      $routeName = $commandManager->getArgumentValue('sf_route');
       $configuration = $this->createConfiguration($application, 'prod');
 
       $this->route = sfImageTransformExtraPluginConfiguration::getRoute($routeName, $configuration);

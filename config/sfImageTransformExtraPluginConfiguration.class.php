@@ -114,12 +114,12 @@ class sfImageTransformExtraPluginConfiguration extends sfPluginConfiguration
   public static function removeOldThumbnails(sfEvent $event)
   {
     $options = $event->getParameters();
-    if(!array_key_exists('route', $options))
+    if(!array_key_exists('sf_route', $options))
     {
-      throw new sfImageTransformExtraPluginConfigurationException('Coul\'d not read the "route" parameter from event!');
+      throw new sfImageTransformExtraPluginConfigurationException('Could not read the "sf_route" parameter from event!');
     }
-    $routeName = $options['route'];
-    unset($options['route']);
+    $routeName = $options['sf_route'];
+    unset($options['sf_route']);
 
     $route = self::getRoute($routeName);
     $route->preassemblePattern($options);
