@@ -96,31 +96,41 @@ class sfRawFileCache extends sfFileCache
   protected function getPathEnd(sfRoute $pattern)
   {
     $path = '';
-    $tokens   = array_reverse($pattern->getTokens());
-    foreach($tokens as $token)
+    if(!$this->pathComplete)
     {
-      if('text' == $token[0] || 'separator' == $token[0])
+      $tokens   = array_reverse($pattern->getTokens());
+      foreach($tokens as $token)
       {
-        $path = $token[2].$path;
-        continue;
+        if('text' == $token[0] || 'separator' == $token[0])
+        {
+          $path = $token[2].$path;
+          continue;
+        }
+        break;
       }
-      break;
     }
     return $path;
   }
 
+  protected $pathComplete = false;
+
   protected function getPathStart(sfRoute $pattern)
   {
     $path = '';
+    $incompleteTokens = count($pattern->getTokens());
     foreach($pattern->getTokens() as $token)
     {
       if('text' == $token[0] || 'separator' == $token[0])
       {
         $path .= $token[2];
+        $incompleteTokens--;
         continue;
       }
       break;
     }
+
+    $this->pathComplete = (0 == $incompleteTokens);
+
     return $path;
   }
 
@@ -130,6 +140,7 @@ class sfRawFileCache extends sfFileCache
     $pathBase     = $this->getOption('cache_dir');
     $pathStart    = $this->getPathStart($route);
     $pathEnd      = $this->getPathEnd($route);
+    if(
     $depth        = substr_count($pathStart.'*'.$pathEnd, '/');
     $paths        = array();
     for($i=$depth; $i<=$routeOptions['max_folder_depth']; $i++)
