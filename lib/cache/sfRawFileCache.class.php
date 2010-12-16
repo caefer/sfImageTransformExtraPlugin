@@ -140,7 +140,6 @@ class sfRawFileCache extends sfFileCache
     $pathBase     = $this->getOption('cache_dir');
     $pathStart    = $this->getPathStart($route);
     $pathEnd      = $this->getPathEnd($route);
-    if(
     $depth        = substr_count($pathStart.'*'.$pathEnd, '/');
     $paths        = array();
     for($i=$depth; $i<=$routeOptions['max_folder_depth']; $i++)
