@@ -104,7 +104,8 @@ class sfImageTransformRoute extends sfRequestRoute
     {
       try
       {
-        $parameter = $object->get($variable);
+        $getter = 'get'.ucfirst($variable);
+        $parameter = $object->$getter();
         $parameters[$variable] = $parameter;
       }
       catch(Exception $e){/* do nothing */}
