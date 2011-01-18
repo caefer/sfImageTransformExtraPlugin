@@ -54,7 +54,7 @@ class sfImageSourceDoctrine extends sfImageSourceLocalAbstract implements sfImag
     $url = parse_url($path);
     try
     {
-      $table = Doctrine::getTable($url['host']);
+      $table = Doctrine_Core::getTable($url['host']);
     }
     catch(Doctrine_Exception $e)
     {
