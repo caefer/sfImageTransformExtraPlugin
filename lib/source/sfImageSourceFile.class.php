@@ -61,7 +61,7 @@ class sfImageSourceFile extends sfImageSourceLocalAbstract implements sfImageSou
 
     if(!count($files))
     {
-      throw new sfError404Exception('Could not find image "'.$url['host'].'"');
+      throw new sfError404Exception('Could not find image "'.$url['path'].'"');
     }
 
     $this->filename = $files[0];
