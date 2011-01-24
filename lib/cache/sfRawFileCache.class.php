@@ -213,6 +213,6 @@ class sfRawFileCache extends sfFileCache
   {
     $context = sfContext::getInstance();
     $internalUri = str_replace('sfImageTransformator/index', '@'.$context->getRouting()->getCurrentRouteName(), $internalUri);
-    return $context->getController()->genUrl($internalUri, false);
+    return str_replace($context->getRequest()->getRelativeUrlRoot(), '', $context->getController()->genUrl($internalUri, false));
   }
 }
