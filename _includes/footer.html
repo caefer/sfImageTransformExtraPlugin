@@ -1,0 +1,16 @@
+  <div class="container footer">
+    <div class="span-24 last">
+      <div class="span-16">
+        <h3>Latest posts</h3>
+        <ul>
+{% for post in site.posts limit:6 %}
+          <li><a href="{{ post.url }}/" title="{{ post.title }}">{{ post.date | date: '%d.%b.%Y' }} - {{ post.title }}</a></li>
+{% endfor %}
+        </ul>
+      </div>
+      <div class="span-8 last">
+        <h3>Christian Schäfer</h3>
+        <img src="http://test.ical.ly/wp-content/uploads/2011/01/foto.jpg" width="110px" class="left"/>
+      </div>
+    </div>
+  </div>
