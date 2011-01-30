@@ -10,7 +10,7 @@ body{font:13px/1.5 Helvetica Neue,Arial,Helvetica,'Liberation Sans',FreeSans,san
 #top-bar ul li a:hover{text-decoration:none;}
 #logo{float:left;color:#fff;font-size:12pt;margin-right:60px;}
 #logo a{color:#fff;height:40px;width:140px;margin-right:5px;outline:none;text-decoration:none;font-family:Times New Roman, serif;font-size: 20pt;}
-#top-bar .active-links{width:350px;position:absolute;right:0;top:0;_padding-top:5px;}
+#top-bar .active-links{position:absolute;right:0;top:0;_padding-top:5px;}
 #top-bar .static-links{float:left;}
 #global-nav{float:left;margin-left:8px;}
 #global-nav li a{outline:none;}
