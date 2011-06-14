@@ -64,7 +64,7 @@ class sfRawFileCache extends sfFileCache
     if (!is_dir(dirname($path))) 
     {
       // create directory structure if needed
-      mkdir(dirname($path) , 0777, true);
+      mkdir(dirname($path), 0777, true);
     }
     
     $tmpFile = tempnam(dirname($path) , basename($path));
@@ -144,7 +144,7 @@ class sfRawFileCache extends sfFileCache
     $paths        = array();
     for($i=$depth; $i<=$routeOptions['max_folder_depth']; $i++)
     {
-      $paths[] = $pathBase.$pathStart.str_repeat('*/', $i - $depth).'*'.$pathEnd;;
+      $paths[] = $pathBase.$pathStart.str_repeat('*/', $i - $depth).'*'.$pathEnd;
     }
     return $paths;
   }

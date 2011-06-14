@@ -171,12 +171,12 @@ class sfImageTransformRoute extends sfRequestRoute
   {
     $params = $this->convertObjectToArray($params);
 
-    if(!$params['sf_format'])
+    if(!isset($params['sf_format']))
     {
       $params['sf_format'] = '{jpg,gif,png}';
     }
 
-    if(!$params['format'])
+    if(!isset($params['format']))
     {
       $params['format']    = '{'.implode(',', array_keys(sfConfig::get('thumbnailing_formats'))).'}';
     }
